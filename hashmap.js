@@ -1,26 +1,73 @@
 /**
- * NOTE: I haven't really started coding this
- * Will start ASAP!
- *
  * @author Ariel Flesler <aflesler@gmail.com>
  */
 
 ;(function(exports){
 	
-	function HashMap(hashProvider) {
-		
-	}
+	function HashMap() {
+		this._data = {};
+		hide(this, '_data');
+	};
 
-	function ExpandoHashProvider() {
+	HashMap.prototype = {
+		constructor:HashMap,
 		
-	}
+		get:function(key) {
+			return this._data[this.hash(key)];
+		},
+		
+		set:function(key, value) {
+			this._data[this.hash(key)] = value;
+		},
+		
+		type:function(key) {
+			var str = Object.prototype.toString.call(key);
+			var type = str.slice(8, -1).toLowerCase();
+			// Some browsers yield DOMWindow for null and undefined, works fine on Node
+			if (type === 'domwindow' && !key) {
+				return key + '';
+			}
+			return type;
+		},
 
-	function ArrayHashProvider() {
-		
-	}
+		hash:function(key) {
+			switch (this.type(key)) {
+				case 'undefined':
+				case 'null':
+				case 'boolean':
+				case 'number':
+				case 'regexp':
+					return key + '';
+
+				case 'date':
+					return ':' + key.getTime();
+
+				case 'string':
+					return '"' + key;
+
+				case 'array':
+				case 'object':
+				default:
+					if (!key._hmuid_) {
+						key._hmuid_ = ++HashMap.uid;
+						hide(key, '_hmuid_');
+					}
+
+					return '{' + key._hmuid_;
+			}
+		}
+	};
+
+	HashMap.uid = 0;
+
+	
+	function hide(obj, prop) {
+		// Make non iterable if supported
+		if (Object.defineProperty) {
+			Object.defineProperty(obj, prop, {enumerable:false});
+		}
+	};
 
 	exports.HashMap = HashMap;
-	exports.ExpandoHashProvider = ExpandoHashProvider;
-	exports.ArrayHashProvider = ArrayHashProvider;
 
 })(this.exports || this);
