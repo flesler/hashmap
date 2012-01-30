@@ -7,6 +7,8 @@ HashMap instances __store key/value pairs__ allowing __keys of any type__.
 
 Unlike regular objects, keys __won't not be stringified__. Numbers and strings won't be mixed, you can pass `Date`'s, `RegExp`'s, DOM Elements, anything! (even `null` and `undefined`)
 
+If you want to understand better how it works and how are different keys treated, check the (precarious) [tests](https://github.com/flesler/hashmap/blob/master/test/all.js).
+
 ## TODO's
 
 * Use a real test framework
