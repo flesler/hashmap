@@ -1,7 +1,8 @@
 // TODO: Use an actual test framework, this is just a first draft version
+// TODO: Make a test version that works on browsers 
 
 var HashMap = require('../hashmap').HashMap;
-var test = require('../lib/test-utils.js');
+var test = require('./lib/util.js');
 
 var map = new HashMap();
 
