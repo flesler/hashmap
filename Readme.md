@@ -9,28 +9,32 @@ Unlike regular objects, __keys won't not be stringified__. For example numbers a
 
 ## Examples
 
-	// Assume this for all examples below
-	var map = new HashMap();
+Assume this for all examples below
 
-	// Basic use case
+	var map = new HashMap();
+ 
+### Basic use case
+
 	map.set("some_key", "some value");
 	map.get("some_key"); // --> "some value"
+ 
+### No stringification
 
-	// No stringification
 	map.set("1", "string one");
 	map.set(1, "number one");
 	map.get("1"); // --> "string one"
 
-Regular Object used as map yields `"number one"`
+A regular `Object` used as a map would yield `"number one"`
 
-	// Objects as keys
+###  Objects as keys
+
 	var key = {};
 	var key2 = {};
 	map.set(key, 123);
 	map.set(key2, 321);
 	map.get(key); // --> 123
 
-Regular Object used as map yields 321
+A regular `Object` used as a map would yield `321`
 
 [Check the tests](https://github.com/flesler/hashmap/blob/master/test/all.js) for some more real code.
 
