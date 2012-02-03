@@ -1,5 +1,6 @@
 // TODO: Use an actual test framework, this is just a first draft version
 // TODO: Make a test version that works on browsers 
+// TODO: Test HashMap.has() and HashMap.remove()
 
 var HashMap = require('../hashmap').HashMap;
 var test = require('./lib/util.js');

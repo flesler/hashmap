@@ -9,13 +9,14 @@
 ;(function(exports){
 	
 	function HashMap() {
-		this._data = {};
-		hide(this, '_data');
+		this._data = {}; // TODO: Would Object.create(null) make any difference
 	};
 
 	HashMap.prototype = {
 		constructor:HashMap,
 		
+		// TODO: Implement a way to iterate (.each()?)
+
 		get:function(key) {
 			return this._data[this.hash(key)];
 		},
@@ -24,6 +25,14 @@
 			this._data[this.hash(key)] = value;
 		},
 		
+		has:function(key) {
+			return this.hash(key) in this._data;
+		},
+		
+		remove:function(key) {
+			delete this._data[this.hash(key)];
+		},
+
 		type:function(key) {
 			var str = Object.prototype.toString.call(key);
 			var type = str.slice(8, -1).toLowerCase();
@@ -52,6 +61,7 @@
 				case 'array':
 				case 'object':
 				default:
+					// TODO: Don't use expandos when Object.defineProperty is not available?
 					if (!key._hmuid_) {
 						key._hmuid_ = ++HashMap.uid;
 						hide(key, '_hmuid_');
