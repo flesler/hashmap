@@ -2,7 +2,7 @@
 
 ## Description
 
-This project provides a `HashMap` class that works both on NodeJS and the browser.
+This project provides a `HashMap` class that works both on __NodeJS__ and the __browser__.
 HashMap instances __store key/value pairs__ allowing __keys of any type__.
 
 Unlike regular objects, __keys won't not be stringified__. For example numbers and strings won't be mixed, you can pass `Date`'s, `RegExp`'s, DOM Elements, anything! (even `null` and `undefined`)
@@ -12,6 +12,10 @@ Unlike regular objects, __keys won't not be stringified__. For example numbers a
 Assume this for all examples below
 
 	var map = new HashMap();
+
+If you're using this within Node, you first need to import the class
+
+	var HashMap = require('hashmap').HashMap;
  
 ### Basic use case
 
