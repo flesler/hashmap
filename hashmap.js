@@ -1,8 +1,8 @@
 /**
  * HashMap
  * @author Ariel Flesler <aflesler@gmail.com>
- * @version 0.1.2
- * Date: 1/30/2012
+ * @version 0.9.0
+ * Date: 6/1/2012
  * Homepage: https://github.com/flesler/hashmap
  */
 
