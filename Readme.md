@@ -47,7 +47,6 @@ A regular `Object` used as a map would yield `321`
 This project is in early development, so any feedback/changes are specially appreciated.
 
 * (?) Allow extending the hashing function in a AOP way or by passing a service
-* (?) Arrays with the same elements are considered the same (currently not).
 * Implement iteration (map.each())
 * Fix: The hashmap will expose an enumerable expando when `Object.defineProperty` doesn't exist maybe use a different hashing approach for this case like `Array.indexOf`
 * Use a real test framework

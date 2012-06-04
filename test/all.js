@@ -48,11 +48,14 @@ test.suite('Testing HashMap.hash()', function(){
 	// Recognized Objects
 	assertHash(/test/, '/test/');
 	assertHash(new Date(1986, 7, 15, 12, 5, 0, 0), ':524502300000');
+	// Arrays
+	assertHash([], '[');
+	assertHash([1, 2, 3], '[1|2|3');
+
 	// Unrecognized Objects
-	assertHash([], '{1');
-	assertHash({}, '{2');
-	assertHash(HashMap, '{3');
-	assertHash(new HashMap, '{4');
+	assertHash({}, '{1');
+	assertHash(HashMap, '{2');
+	assertHash(new HashMap, '{3');
 });
 
 
@@ -104,6 +107,9 @@ test.suite('Testing pair of keys are mapped to the same hash', function(){
 	assertSameHash("Test", "Test");
 	assertSameHash(/test/, /test/);
 	assertSameHash(new Date(1986, 7, 15, 12, 5, 0, 0), new Date(1986, 7, 15, 12, 5, 0, 0));
+	assertSameHash([], []);
+	assertSameHash([1, 2, 'Q'], [1, 2, 'Q']);
+	assertSameHash([null, /a/, NaN], [null, /a/, NaN]);
 });
 
 
@@ -129,7 +135,6 @@ test.suite('Testing pair of keys are not mapped to the same hash', function(){
 	assertDifferentHash(/test/, "/test/");
 	assertDifferentHash(new Date(123456789), new Date(987654321));
 	assertDifferentHash({}, {});
-	assertDifferentHash([], []);
 });
 
 

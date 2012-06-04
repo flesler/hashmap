@@ -59,6 +59,11 @@
 					return '"' + key;
 
 				case 'array':
+					var hashes = [];
+					for (var i = 0; i < key.length; i++)
+						hashes[i] = this.hash(key[i]);
+					return '[' + hashes.join('|');
+
 				case 'object':
 				default:
 					// TODO: Don't use expandos when Object.defineProperty is not available?
