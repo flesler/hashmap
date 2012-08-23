@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/flesler/hashmap.png)](http://travis-ci.org/flesler/hashmap)
 # HashMap Class for JavaScript
 
 ## Description
