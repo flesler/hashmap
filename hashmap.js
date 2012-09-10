@@ -43,6 +43,14 @@
 			return type;
 		},
 
+		count:function() {
+			var n = 0;
+			for (var key in this._data) {
+				n++;
+			}
+			return n;
+		},
+
 		hash:function(key) {
 			switch (this.type(key)) {
 				case 'undefined':
