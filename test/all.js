@@ -160,4 +160,19 @@ test.suite('Testing hashing an object doesn\'t add enumerable keys (no logs for 
 	}
 });
 
+test.suite('Testing count method', function(){
+
+	var hashMap = new HashMap();
+	test.assert("0 count", hashMap.count(), 0);
+	hashMap.set(1, "test");
+	test.assert("1 count", hashMap.count(), 1);
+	hashMap.set("1", "test");
+	test.assert("2 count", hashMap.count(), 2);
+	hashMap.remove(1);
+	test.assert("1 count after remove", hashMap.count(), 1);
+	hashMap.remove("1");
+	test.assert("0 count after remove", hashMap.count(), 0);
+});
+
+
 test.results();

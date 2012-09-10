@@ -74,6 +74,9 @@
 
 					return '{' + key._hmuid_;
 			}
+		},
+		count:function() {
+			return Object.keys(this._data).length;
 		}
 	};
 
