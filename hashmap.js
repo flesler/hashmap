@@ -9,7 +9,7 @@
 ;(function(exports){
 	
 	function HashMap() {
-		this._data = {}; // TODO: Would Object.create(null) make any difference
+		this.clear();
 	};
 
 	HashMap.prototype = {
@@ -49,6 +49,11 @@
 				n++;
 			}
 			return n;
+		},
+
+		clear:function() {
+			// TODO: Would Object.create(null) make any difference
+			this._data = {};
 		},
 
 		hash:function(key) {

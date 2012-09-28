@@ -4,12 +4,11 @@
 
 var HashMap = require('../hashmap').HashMap;
 var test = require('./lib/util.js');
-
-var map = new HashMap();
+var proto = HashMap.prototype;
 
 test.suite('Testing HashMap.type()', function(){
 	function assertType(data, expected) {
-		test.assert(data, map.type(data), expected);
+		test.assert(data, proto.type(data), expected);
 	}
 
 	assertType(null, 'null');
@@ -32,7 +31,7 @@ test.suite('Testing HashMap.type()', function(){
 
 test.suite('Testing HashMap.hash()', function(){
 	function assertHash(data, expected) {
-		test.assert(data, map.hash(data), expected);
+		test.assert(data, proto.hash(data), expected);
 	}
 
 	// Primitives
@@ -70,7 +69,9 @@ test.suite('Testing same key remains mapped to same hash', function(){
 		} else {
 			test.error(data, 'cannot be reused as key');
 		}
-	}
+	};
+
+	var map = new HashMap();
 
 	assertKey(null);
 	assertKey(undefined);
@@ -97,7 +98,9 @@ test.suite('Testing pair of keys are mapped to the same hash', function(){
 		} else {
 			test.error(data, 'and', data2, 'were not mapped to the same key');
 		}
-	}
+	};
+
+	var map = new HashMap();
 
 	assertSameHash(null, null);
 	assertSameHash(undefined, undefined);
@@ -124,7 +127,9 @@ test.suite('Testing pair of keys are not mapped to the same hash', function(){
 		} else {
 			test.error(data, 'and', data2, 'got mapped to the same key');
 		}
-	}
+	};
+
+	var map = new HashMap();
 
 	assertDifferentHash(null, undefined);
 	assertDifferentHash(null, false);
@@ -139,7 +144,6 @@ test.suite('Testing pair of keys are not mapped to the same hash', function(){
 
 
 test.suite('Testing hashing an object doesn\'t add enumerable keys (no logs for OK)', function(){
-
 	var obj = {};
 	var preset = [];
 
@@ -148,7 +152,7 @@ test.suite('Testing hashing an object doesn\'t add enumerable keys (no logs for 
 		test.warn('Key', key, 'was already enumerable');
 	}
 
-	map.hash(obj);
+	proto.hash(obj);
 
 	// Uncomment to generate an error
 	//Object.defineProperty(obj, '_hmuid_', {enumerable:true});
@@ -160,25 +164,41 @@ test.suite('Testing hashing an object doesn\'t add enumerable keys (no logs for 
 	}
 });
 
-test.suite('Testing count method', function(){
-	var hashMap = new HashMap();
+test.suite('Testing count() method', function(){
+	var map = new HashMap();
 	
-	test.assert("0 entries", hashMap.count(), 0);
+	test.assert("0 entries", map.count(), 0);
 	
-	hashMap.set(1, "test");
-	test.assert("1 entry", hashMap.count(), 1);
+	map.set(1, "test");
+	test.assert("1 entry", map.count(), 1);
 	
-	hashMap.set("1", "test");
-	test.assert("2 entries", hashMap.count(), 2);
+	map.set("1", "test");
+	test.assert("2 entries", map.count(), 2);
 	
-	hashMap.set("1", "another_value");
-	test.assert("same entries after update", hashMap.count(), 2);
+	map.set("1", "another_value");
+	test.assert("same entries after update", map.count(), 2);
 
-	hashMap.remove(1);
-	test.assert("1 entry after remove", hashMap.count(), 1);
+	map.remove(1);
+	test.assert("1 entry after remove()", map.count(), 1);
 
-	hashMap.remove("1");
-	test.assert("0 entries after remove", hashMap.count(), 0);
+	map.remove("1");
+	test.assert("0 entries after remove()", map.count(), 0);
+});
+
+test.suite('Testing clear() method', function(){
+	var map = new HashMap();
+
+	map.clear();
+	test.assert("0 entries after empty clear()", map.count(), 0);
+
+	test.assert("0 entries", map.count(), 0);
+	
+	map.set(1, "test");
+	map.set(2, "test2");
+	test.assert("2 entries", map.count(), 2);
+	
+	map.clear();
+	test.assert("0 entries after clear()", map.count(), 0);
 });
 
 test.results();
