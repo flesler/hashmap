@@ -40,6 +40,16 @@ A regular `Object` used as a map would yield `"number one"`
 
 A regular `Object` used as a map would yield `321`
 
+###  Iterating
+
+	map.set(1, "test 1");
+    map.set(2, "test 2");
+    map.set(3, "test 3");
+    
+    map.each(function(key, value) {
+        console.log(key + " : " + value);
+    });
+
 [Check the tests](https://github.com/flesler/hashmap/blob/master/test/all.js) for some more real code.
 
 ## TODO's

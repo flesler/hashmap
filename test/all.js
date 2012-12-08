@@ -201,4 +201,22 @@ test.suite('Testing clear() method', function(){
 	test.assert("0 entries after clear()", map.count(), 0);
 });
 
+test.suite('Testing HashMap.each()', function(){
+    var map = new HashMap();
+    var keys = [];
+    var values = [];
+    
+    map.set(1, "test 1");
+    map.set(2, "test 2");
+    map.set(3, "test 3");
+    
+    map.each(function(key, value) {
+        keys.push(key);
+        values.push(value);
+    });
+    
+    test.assert("Correct keys", keys.length, 3);
+    test.assert("Correct values", values.length, 3);
+});
+
 test.results();
