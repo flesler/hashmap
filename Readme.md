@@ -42,11 +42,11 @@ A regular `Object` used as a map would yield `321`
 
 ###  Iterating
 
-	map.set(1, "test 1");
+    map.set(1, "test 1");
     map.set(2, "test 2");
     map.set(3, "test 3");
     
-    map.each(function(key, value) {
+    map.forEach(function(value, key, obj) {
         console.log(key + " : " + value);
     });
 
