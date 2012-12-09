@@ -1,6 +1,5 @@
 // TODO: Use an actual test framework, this is just a first draft version
-// TODO: Make a test version that works on browsers 
-// TODO: Test HashMap.has() and HashMap.remove()
+// TODO: Make a test version that works on browsers
 
 var HashMap = require('../hashmap').HashMap;
 var test = require('./lib/util.js');
@@ -28,7 +27,6 @@ test.suite('Testing HashMap.type()', function(){
 	assertType(new HashMap, 'object');
 });
 
-
 test.suite('Testing HashMap.hash()', function(){
 	function assertHash(data, expected) {
 		test.assert(data, proto.hash(data), expected);
@@ -46,7 +44,7 @@ test.suite('Testing HashMap.hash()', function(){
 	assertHash("Test", '"Test');
 	// Recognized Objects
 	assertHash(/test/, '/test/');
-	assertHash(new Date(1986, 7, 15, 12, 5, 0, 0), ':524502300000');
+	assertHash(new Date(Date.parse("Fri, 15 Aug 1986 15:05:00 GMT")), ':524502300000');
 	// Arrays
 	assertHash([], '[');
 	assertHash([1, 2, 3], '[1|2|3');
@@ -57,7 +55,20 @@ test.suite('Testing HashMap.hash()', function(){
 	assertHash(new HashMap, '{3');
 });
 
+test.suite('Testing HashMap.has()', function(){
+    var map = new HashMap();
+    map.set('key1', 'value1');
+    test.assert("key1 exists", map.has('key1'), true);
+    test.assert("key2 does not exist", map.has('key2'), false);
+});
 
+test.suite('Testing HashMap.remove()', function(){
+    var map = new HashMap();
+    map.set('key1', 'value1');
+    test.assert("key1 exists", map.has('key1'), true);
+    map.remove('key1');
+    test.assert("key1 no longer exists", map.has('key1'), false);
+});
 
 test.suite('Testing same key remains mapped to same hash', function(){
 	function assertKey(data) {
@@ -87,7 +98,6 @@ test.suite('Testing same key remains mapped to same hash', function(){
 	assertKey(new HashMap);
 });
 
-
 test.suite('Testing pair of keys are mapped to the same hash', function(){
 	function assertSameHash(data, data2) {
 		var someValue = test.uid();
@@ -115,7 +125,6 @@ test.suite('Testing pair of keys are mapped to the same hash', function(){
 	assertSameHash([null, /a/, NaN], [null, /a/, NaN]);
 });
 
-
 test.suite('Testing pair of keys are not mapped to the same hash', function(){
 	function assertDifferentHash(data, data2) {
 		var someValue = test.uid();
@@ -142,7 +151,6 @@ test.suite('Testing pair of keys are not mapped to the same hash', function(){
 	assertDifferentHash({}, {});
 });
 
-
 test.suite('Testing hashing an object doesn\'t add enumerable keys (no logs for OK)', function(){
 	var obj = {};
 	var preset = [];
@@ -164,7 +172,7 @@ test.suite('Testing hashing an object doesn\'t add enumerable keys (no logs for 
 	}
 });
 
-test.suite('Testing count() method', function(){
+test.suite('Testing HashMap.count() method', function(){
 	var map = new HashMap();
 	
 	test.assert("0 entries", map.count(), 0);
@@ -185,7 +193,7 @@ test.suite('Testing count() method', function(){
 	test.assert("0 entries after remove()", map.count(), 0);
 });
 
-test.suite('Testing clear() method', function(){
+test.suite('Testing HashMap.clear() method', function(){
 	var map = new HashMap();
 
 	map.clear();
@@ -199,6 +207,24 @@ test.suite('Testing clear() method', function(){
 	
 	map.clear();
 	test.assert("0 entries after clear()", map.count(), 0);
+});
+
+test.suite('Testing HashMap.forEach()', function(){
+    var map = new HashMap();
+    var keys = [];
+    var values = [];
+    
+    map.set(1, "test 1");
+    map.set(2, "test 2");
+    map.set(3, "test 3");
+    
+    map.forEach(function(value, key, obj) {
+        keys.push(key);
+        values.push(value);
+    });
+    
+    test.assert("Correct keys", keys.length, 3);
+    test.assert("Correct values", values.length, 3);
 });
 
 test.results();

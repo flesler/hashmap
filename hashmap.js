@@ -14,8 +14,6 @@
 
 	HashMap.prototype = {
 		constructor:HashMap,
-		
-		// TODO: Implement a way to iterate (.each()?)
 
 		get:function(key) {
 			return this._data[this.hash(key)];
@@ -87,7 +85,13 @@
 
 					return '{' + key._hmuid_;
 			}
-		}
+		},
+
+		forEach:function(func) {
+            for (var key in this._data) {
+                func(this._data[key], key, this._data);
+            }
+        },
 	};
 
 	HashMap.uid = 0;
