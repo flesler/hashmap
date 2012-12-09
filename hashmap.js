@@ -87,9 +87,9 @@
 			}
 		},
 
-		each:function(func) {
+		forEach:function(func) {
             for (var key in this._data) {
-                func(key, this._data[key]);
+                func(this._data[key], key, this._data);
             }
         },
 	};
