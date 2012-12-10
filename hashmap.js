@@ -88,10 +88,10 @@
 		},
 
 		forEach:function(func) {
-            for (var key in this._data) {
-                func(this._data[key], key, this._data);
-            }
-        },
+			for (var key in this._data) {
+				func(this._data[key], key, this._data);
+			}
+		},
 	};
 
 	HashMap.uid = 0;
