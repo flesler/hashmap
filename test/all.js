@@ -214,13 +214,15 @@ test.suite('Testing HashMap.forEach()', function(){
     var keys = [];
     var values = [];
     
-    map.set(1, "test 1");
-    map.set(2, "test 2");
-    map.set(3, "test 3");
+    map.set(1, "1");
+    map.set(2, "2");
+    map.set(3, "3");
     
-    map.forEach(function(value, key, obj) {
+    map.forEach(function(value, key) {
         keys.push(key);
         values.push(value);
+
+        test.assert("Correct pair", key.toString(), value);
     });
     
     test.assert("Correct keys", keys.length, 3);

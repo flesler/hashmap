@@ -16,11 +16,13 @@
 		constructor:HashMap,
 
 		get:function(key) {
-			return this._data[this.hash(key)];
+			var data = this._data[this.hash(key)];
+			return data && data[1];
 		},
 		
 		set:function(key, value) {
-			this._data[this.hash(key)] = value;
+			// Store original key as well (for iteration)
+			this._data[this.hash(key)] = [key, value];
 		},
 		
 		has:function(key) {
@@ -89,7 +91,8 @@
 
 		forEach:function(func) {
 			for (var key in this._data) {
-				func(this._data[key], key, this._data);
+				var data = this._data[key];
+				func(data[1], data[0]);
 			}
 		},
 	};
