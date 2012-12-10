@@ -46,7 +46,7 @@ A regular `Object` used as a map would yield `321`
     map.set(2, "test 2");
     map.set(3, "test 3");
     
-    map.forEach(function(value, key, obj) {
+    map.forEach(function(value, key) {
         console.log(key + " : " + value);
     });
 
@@ -57,7 +57,6 @@ A regular `Object` used as a map would yield `321`
 This project is in early development, so any feedback/changes are specially appreciated.
 
 * (?) Allow extending the hashing function in a AOP way or by passing a service
-* Implement iteration (map.each())
 * Fix: The hashmap will expose an enumerable expando when `Object.defineProperty` doesn't exist maybe use a different hashing approach for this case like `Array.indexOf`
 * Use a real test framework
 * Make tests work on the browser
