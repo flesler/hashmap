@@ -1,8 +1,8 @@
 /**
  * HashMap
  * @author Ariel Flesler <aflesler@gmail.com>
- * @version 0.9.2
- * Date: 12/9/2012
+ * @version 0.9.3
+ * Date: 4/3/2013
  * Homepage: https://github.com/flesler/hashmap
  */
 
@@ -94,7 +94,7 @@
 				var data = this._data[key];
 				func(data[1], data[0]);
 			}
-		},
+		}
 	};
 
 	HashMap.uid = 0;
