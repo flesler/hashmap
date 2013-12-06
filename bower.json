@@ -5,9 +5,24 @@
   "homepage": "https://github.com/flesler/hashmap",
   "main": "./hashmap.js",
   "dependencies": {},
-  "keywords": ["hashmap", "map", "object", "array", "associative", "javascript", "nodejs", "node", "browser"],
+  "keywords": [
+    "hashmap",
+    "map",
+    "object",
+    "array",
+    "associative",
+    "javascript",
+    "nodejs",
+    "node",
+    "browser"
+  ],
   "author": {
     "name": "Ariel Flesler",
     "web": "http://flesler.blogspot.com/"
-  }
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ]
 }
