@@ -1,8 +1,25 @@
 # HashMap Class for JavaScript
 
+## Installation
+Using npm:
+
+    $ npm install hashmap
+
+Using bower:
+
+    $ bower install hashmap
+
+For the browser:
+
+Download the [source file](https://raw.github.com/flesler/hashmap/master/hashmap.js) and include it.
+
+To run the tests:
+
+    $ make test
+
 ## Description
 
-This project provides a `HashMap` class that works both on __NodeJS__ and the __browser__.
+This project provides a `HashMap` class that works both on __Node.js__ and the __browser__.
 HashMap instances __store key/value pairs__ allowing __keys of any type__.
 
 Unlike regular objects, __keys won't not be stringified__. For example numbers and strings won't be mixed, you can pass `Date`'s, `RegExp`'s, DOM Elements, anything! (even `null` and `undefined`)
