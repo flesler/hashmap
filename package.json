@@ -1,17 +1,22 @@
 {
-    "name": "hashmap"
-  , "author": "Ariel Flesler <aflesler@gmail.com>"
-  , "version": "1.0.0"
-  , "description": "HashMap for Node JS"
-  , "keywords": ["hashmap", "map", "object", "array", "associative", "javascript", "nodejs", "node", "browser"]
-  , "license": "MIT"
-  , "repository": "git://github.com/flesler/hashmap"
-  , "main": "./hashmap.js"
-  , "engines": { "node": "*" }
-  , "dependencies": {}
-  , "devDependencies": {
-    "mocha": "*",
-    "chai": "*"
-  }
+    "name": "hashmap",
+    "author": "Ariel Flesler <aflesler@gmail.com>",
+    "version": "1.0.0",
+    "description": "HashMap for Node JS",
+    "keywords": ["hashmap", "map", "object", "array", "associative", "javascript", "nodejs", "node", "browser"],
+    "license": "MIT",
+    "homepage": "https://github.com/flesler/hashmap",
+    "bugs": "https://github.com/flesler/hashmap/issues",
+    "repository": "git://github.com/flesler/hashmap",
+    "main": "./hashmap.js",
+    "scripts": {
+      "test": "./node_modules/.bin/mocha test/*.js"
+    },
+    "engines": { "node": "*" },
+    "dependencies": {},
+    "devDependencies": {
+      "mocha": "*",
+      "chai": "*"
+    }
 }
 
