@@ -8,7 +8,10 @@
   , "repository": "git://github.com/flesler/hashmap"
   , "main": "./hashmap.js"
   , "engines": { "node": "*" }
-  , "dependencies": {
-    }
+  , "dependencies": {}
+  , "devDependencies": {
+    "mocha": "*",
+    "chai": "*"
+  }
 }
 

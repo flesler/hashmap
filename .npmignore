@@ -1,0 +1,13 @@
+.git*
+.npmignore
+npm-debug.log
+*.md
+*.tgz
+*.tar.gz
+docs/
+examples/
+support/
+test/
+.DS_Store
+coverage.html
+lib-cov
