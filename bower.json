@@ -1,7 +1,7 @@
 {
   "name": "hashmap",
-  "version": "1.0.0",
-  "description": "HashMap for Node JS",
+  "version": "1.0.1",
+  "description": "HashMap Class for JavaScript",
   "homepage": "https://github.com/flesler/hashmap",
   "main": "./hashmap.js",
   "dependencies": {},

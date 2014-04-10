@@ -16,7 +16,7 @@ If you like risk, you can download the [latest master version](https://raw.githu
 
 To run the tests:
 
-    $ make test
+    $ npm test
 
 ## Description
 
@@ -68,14 +68,33 @@ A regular `Object` used as a map would yield `321`
         console.log(key + " : " + value);
     });
 
-[Check the tests](test/all.js) for some more real code.
+[Check the tests](test/test.js) for some more real code.
+
+## LICENSE
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Ariel Flesler
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF
 
 ## TODO's
 
-This project is in early development, so any feedback/changes are specially appreciated.
-
 * (?) Allow extending the hashing function in a AOP way or by passing a service
-* Fix: The hashmap will expose an enumerable expando when `Object.defineProperty` doesn't exist maybe use a different hashing approach for this case like `Array.indexOf`
-* Use a real test framework
 * Make tests work on the browser
 * Document the public API of HashMap's

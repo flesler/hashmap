@@ -1,8 +1,8 @@
 {
     "name": "hashmap",
     "author": "Ariel Flesler <aflesler@gmail.com>",
-    "version": "1.0.0",
-    "description": "HashMap for Node JS",
+    "version": "1.0.1",
+    "description": "HashMap Class for JavaScript",
     "keywords": ["hashmap", "map", "object", "array", "associative", "javascript", "nodejs", "node", "browser"],
     "license": "MIT",
     "homepage": "https://github.com/flesler/hashmap",
