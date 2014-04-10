@@ -1,6 +1,7 @@
 # HashMap Class for JavaScript
 
 ## Installation
+
 Using npm:
 
     $ npm install hashmap
@@ -9,9 +10,8 @@ Using bower:
 
     $ bower install hashmap
 
-For the browser:
-
-Download the [source file](https://raw.github.com/flesler/hashmap/master/hashmap.js) and include it.
+You can download the last stable version from the [releases page](releases).
+If you like risk, you can download the [latest master version](https://raw.github.com/flesler/hashmap/master/hashmap.js), it's usually stable.
 
 To run the tests:
 
