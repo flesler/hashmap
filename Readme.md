@@ -22,7 +22,7 @@ To run the tests:
 This project provides a `HashMap` class that works both on __Node.js__ and the __browser__.
 HashMap instances __store key/value pairs__ allowing __keys of any type__.
 
-Unlike regular objects, __keys won't not be stringified__. For example numbers and strings won't be mixed, you can pass `Date`'s, `RegExp`'s, DOM Elements, anything! (even `null` and `undefined`)
+Unlike regular objects, __keys will not be stringified__. For example numbers and strings won't be mixed, you can pass `Date`'s, `RegExp`'s, DOM Elements, anything! (even `null` and `undefined`)
 
 ## Examples
 
