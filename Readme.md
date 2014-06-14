@@ -25,6 +25,20 @@ HashMap instances __store key/value pairs__ allowing __keys of any type__.
 
 Unlike regular objects, __keys will not be stringified__. For example numbers and strings won't be mixed, you can pass `Date`'s, `RegExp`'s, DOM Elements, anything! (even `null` and `undefined`)
 
+## HashMap methods
+
+- `get(key:*) : *` returns the value stored for that key.
+- `set(key:*, value:*) : void` stores a key-value pair
+- `has(key:*) : Boolean` returns whether a key is set on the hashmap
+- `remove(key:*) : void` deletes a key-value pair by key
+- `type(key:*) : String` returns the data type of the provided key (used internally)
+- `keys() : Array<*>` returns an array with all the registered keys
+- `values() : Array<*>` returns an array with all the values
+- `count() : Number` returns the amount of key-value pairs
+- `clear() : void` removes all the key-value pairs on the hashmap
+- `hash(key:*) : String` returns the stringified version of a key (used internally)
+- `forEach(function(value, key))` iterates the pairs and calls the function for each one
+
 ## Examples
 
 Assume this for all examples below
@@ -67,21 +81,6 @@ A regular `Object` used as a map would yield `321`
     map.forEach(function(value, key) {
         console.log(key + " : " + value);
     });
-
-## Public API
-
-- `get(key:*) : *` returns the value stored for that key.
-- `set(key:*, value:*) : void` stores a key-value pair
-- `has(key:*) : Boolean` returns whether a key is set on the hashmap
-- `remove(key:*) : void` deletes a key-value pair by key
-- `type(key:*) : String` returns the data type of the provided key (used internally)
-- `keys() : Array<*>` returns an array with all the registered keys
-- `values() : Array<*>` returns an array with all the values
-- `count() : Number` returns the amount of key-value pairs
-- `clear() : void` removes all the key-value pairs on the hashmap
-- `hash(key:*) : String` returns the stringified version of a key (used internally)
-- `forEach(function(value, key))` iterates the pairs and calls the function for each one
-
 
 
 ## LICENSE
