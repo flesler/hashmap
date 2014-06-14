@@ -13,10 +13,10 @@
         // Node. Does not work with strict CommonJS, but
         // only CommonJS-like environments that support module.exports,
         // like Node.
-        module.exports = factory();
+        exports.HashMap = factory();
     } else {
         // Browser globals (root is window)
-        root.returnExports = factory();
+        root.HashMap = factory();
   }
 }(this, function () {
 	
