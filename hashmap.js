@@ -1,24 +1,22 @@
 /**
  * HashMap - HashMap Class for JavaScript
  * @author Ariel Flesler <aflesler@gmail.com>
- * @version 1.0.1
+ * @version 1.1.0
  * Homepage: https://github.com/flesler/hashmap
  */
 
-(function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define([], factory);
-    } else if (typeof exports === 'object') {
-        // Node. Does not work with strict CommonJS, but
-        // only CommonJS-like environments that support module.exports,
-        // like Node.
-        exports.HashMap = factory();
-    } else {
-        // Browser globals (root is window)
-        root.HashMap = factory();
-  }
-}(this, function () {
+(function (factory) {
+	if (typeof define === 'function' && define.amd) {
+		// AMD. Register as an anonymous module.
+		define([], factory);
+	} else if (typeof exports === 'object') {
+		// Node js environment
+		exports.HashMap = factory();
+	} else {
+		// Browser globals (this is window)
+		this.HashMap = factory();
+	}
+}(function () {
 	
 	function HashMap() {
 		this.clear();
