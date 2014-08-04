@@ -40,13 +40,13 @@
 		},
 		
 		search:function(value) {
-            for (var key in this._data) {
-                if (this._data[key][1] === value) {
-                    return this._data[key][0];
-                }
-            }
+			for (var key in this._data) {
+				if (this._data[key][1] === value) {
+					return this._data[key][0];
+				}
+			}
 
-            return null;
+			return null;
 		},
 		
 		remove:function(key) {

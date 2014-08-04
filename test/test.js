@@ -91,7 +91,7 @@ describe('hashmap', function() {
 
 	describe('hashmap.search()', function() {
 		it('should return null when it does not have an entry with a value', function() {
-			expect(hashmap.has('value')).to.be.false;
+			expect(hashmap.search('value')).to.be.null;
 		});
 
 		it('should return key under which a value is stored', function() {
