@@ -1,7 +1,7 @@
 /**
  * HashMap - HashMap Class for JavaScript
  * @author Ariel Flesler <aflesler@gmail.com>
- * @version 1.1.0
+ * @version 1.2.0
  * Homepage: https://github.com/flesler/hashmap
  */
 
@@ -37,6 +37,16 @@
 		
 		has:function(key) {
 			return this.hash(key) in this._data;
+		},
+		
+		search:function(value) {
+            for (var key in this._data) {
+                if (this._data[key][1] === value) {
+                    return this._data[key][0];
+                }
+            }
+
+            return null;
 		},
 		
 		remove:function(key) {
