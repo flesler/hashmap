@@ -112,6 +112,13 @@
 				var data = this._data[key];
 				func.call(this, data[1], data[0]);
 			}
+		},
+
+		update:function(other) {
+			var that = this;
+			other.forEach(function(value, key){
+				that.set(key, value);
+			});
 		}
 	};
 

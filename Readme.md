@@ -38,6 +38,7 @@ Unlike regular objects, __keys will not be stringified__. For example numbers an
 - `clear() : void` removes all the key-value pairs on the hashmap
 - `hash(key:*) : String` returns the stringified version of a key (used internally)
 - `forEach(function(value, key))` iterates the pairs and calls the function for each one
+- `update(other)` updates data by pairs from another HashMap
 
 ## Examples
 
@@ -81,6 +82,18 @@ A regular `Object` used as a map would yield `321`
     map.forEach(function(value, key) {
         console.log(key + " : " + value);
     });
+
+
+### Combining HashMaps with update method
+
+	var other = new HashMap();
+	other.set(1, "replaced");
+	other.set(8, "another foo");
+	other.set(9, "another bar");
+	map.update(other);
+	map.get(1); // "replaced";
+	map.get(8); // "another foo";
+	map.get(9); // "another bar";
 
 
 ## LICENSE
