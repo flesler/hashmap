@@ -30,6 +30,7 @@ Unlike regular objects, __keys will not be stringified__. For example numbers an
 - `get(key:*) : *` returns the value stored for that key.
 - `set(key:*, value:*) : void` stores a key-value pair
 - `has(key:*) : Boolean` returns whether a key is set on the hashmap
+- `search(value:*) : *` returns key under which given value is stored (`null` if not found)
 - `remove(key:*) : void` deletes a key-value pair by key
 - `type(key:*) : String` returns the data type of the provided key (used internally)
 - `keys() : Array<*>` returns an array with all the registered keys
