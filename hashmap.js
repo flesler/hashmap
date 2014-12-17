@@ -1,7 +1,7 @@
 /**
  * HashMap - HashMap Class for JavaScript
  * @author Ariel Flesler <aflesler@gmail.com>
- * @version 1.2.0
+ * @version 2.0.0
  * Homepage: https://github.com/flesler/hashmap
  */
 
@@ -18,11 +18,16 @@
 	}
 }(function () {
 	
-	function HashMap() {
+	function HashMap(other) {
 		this.clear();
+		switch (arguments.length) {
+			case 0: break;
+			case 1: this.copy(other); break;
+			default: multi(this, arguments); break;
+		}
 	}
 
-	HashMap.prototype = {
+	var proto = HashMap.prototype = {
 		constructor:HashMap,
 
 		get:function(key) {
@@ -33,6 +38,16 @@
 		set:function(key, value) {
 			// Store original key as well (for iteration)
 			this._data[this.hash(key)] = [key, value];
+		},
+
+		multi:function() {
+			multi(this, arguments);
+		},
+
+		copy:function(other) {
+			for (var key in other._data) {
+				this._data[key] = other._data[key];
+			}
 		},
 		
 		has:function(key) {
@@ -84,6 +99,10 @@
 			this._data = {};
 		},
 
+		clone:function() {
+			return new HashMap(this);
+		},
+
 		hash:function(key) {
 			switch (this.type(key)) {
 				case 'undefined':
@@ -127,7 +146,34 @@
 
 	HashMap.uid = 0;
 
-	
+	//- Automatically add chaining to some methods
+
+	for (var method in proto) {
+		// Skip constructor, valueOf, toString and any other built-in method
+		if (method === 'constructor' || !proto.hasOwnProperty(method)) {
+			continue;
+		}
+		var fn = proto[method];
+		if (fn.toString().indexOf('return ') === -1) {
+			proto[method] = chain(fn);
+		}
+	}
+
+	//- Utils
+
+	function multi(map, args) {
+		for (var i = 0; i < args.length; i += 2) {
+			map.set(args[i], args[i+1])
+		}
+	}
+
+	function chain(fn) {
+		return function() {
+			fn.apply(this, arguments);
+			return this;
+		};
+	}
+
 	function hide(obj, prop) {
 		// Make non iterable if supported
 		if (Object.defineProperty) {

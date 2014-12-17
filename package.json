@@ -1,7 +1,7 @@
 {
     "name": "hashmap",
     "author": "Ariel Flesler <aflesler@gmail.com>",
-    "version": "1.2.0",
+    "version": "2.0.0",
     "description": "HashMap Class for JavaScript",
     "keywords": ["hashmap", "map", "object", "array", "associative", "javascript", "nodejs", "node", "browser"],
     "license": "MIT",
@@ -10,7 +10,7 @@
     "repository": "git://github.com/flesler/hashmap",
     "main": "./hashmap.js",
     "scripts": {
-      "test": "./node_modules/.bin/mocha test/*.js"
+      "test": "mocha test/*.js"
     },
     "engines": { "node": "*" },
     "dependencies": {},

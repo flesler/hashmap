@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.0
+- Added chaining to all methods with no returned value
+- Added multi() method
+- Added clone() method
+- Added copy() method
+- constructor accepts one argument for cloning or several for multi()
+
+## 1.2.0
+- Added search() method, thanks rafalwrzeszcz
+
 ## 1.1.0
 - AMD support, thanks khrome
 

@@ -76,6 +76,17 @@ describe('hashmap', function() {
 		// TODO: test hash(1) !== hash('1')
 	});
 
+	describe('method chaining', function() {
+		it('should return the instance on some methods', function() {
+			expect(hashmap.set('key', 'value')).to.equal(hashmap);
+			expect(hashmap.multi()).to.equal(hashmap);
+			expect(hashmap.remove('key')).to.equal(hashmap);
+			expect(hashmap.copy(hashmap)).to.equal(hashmap);
+			expect(hashmap.clear()).to.equal(hashmap);
+			expect(hashmap.forEach(function(){})).to.equal(hashmap);
+		});
+	});
+
 	describe('hashmap.has()', function() {
 		it('should return false when it does not have an entry with a key', function() {
 			expect(hashmap.has('key')).to.be.false;
@@ -298,6 +309,100 @@ describe('hashmap', function() {
 			hashmap.set('key2', 'value2');
 			hashmap.clear();
 			expect(hashmap.count()).to.equal(0);
+		});
+	});
+
+	describe('hashmap.copy()', function() {
+		it('should work on an empty hashmap', function() {
+			var map = new HashMap();
+			map.copy(hashmap);
+			expect(map.count()).to.equal(0);
+		});
+
+		it('should copy all values', function() {
+			hashmap.set('key', 'value');
+			hashmap.set('key2', 'value2');
+
+			var map = new HashMap();
+			map.copy(hashmap);
+
+			expect(map.count()).to.equal(2);
+			expect(map.get('key')).to.equal('value');
+			expect(map.get('key2')).to.equal('value2');
+		});
+	});
+
+	describe('hashmap.clone()', function() {
+		it('should return a new hashmap', function() {
+			var clone = hashmap.clone();
+			expect(clone).to.be.instanceOf(HashMap);
+			expect(clone).not.to.equal(hashmap);
+		});
+
+		it('should work on an empty hashmap', function() {
+			var clone = hashmap.clone();
+			expect(clone.count()).to.equal(0);
+		});
+
+		it('should retain all values', function() {
+			hashmap.set('key', 'value');
+			hashmap.set('key2', 'value2');
+			var clone = hashmap.clone();
+			expect(clone.count()).to.equal(2);
+			expect(clone.get('key')).to.equal('value');
+			expect(clone.get('key2')).to.equal('value2');
+			expect(hashmap.count()).to.equal(2);
+			expect(hashmap.get('key')).to.equal('value');
+			expect(hashmap.get('key2')).to.equal('value2');
+		});
+	});
+
+	describe('hashmap.multi()', function() {
+		it('should do nothing with no arguments', function() {
+			hashmap.multi();
+			expect(hashmap.count()).to.equal(0);
+		});
+
+		it('should work with one pair', function() {
+			hashmap.multi('key', 'value');
+			expect(hashmap.count()).to.equal(1);
+			expect(hashmap.get('key')).to.equal('value');
+		});
+
+		it('should work with several pairs', function() {
+			hashmap.multi(
+				'key', 'value',
+				'key2', 'value2'
+			);
+			expect(hashmap.count()).to.equal(2);
+			expect(hashmap.get('key')).to.equal('value');
+			expect(hashmap.get('key2')).to.equal('value2');
+		});
+	});
+
+	describe('constructor', function() {
+		it('should create an empty hashmap when no arguments', function() {
+			expect(hashmap.count()).to.equal(0);
+		});
+
+		it('should clone a hashmap when one argument', function() {
+			hashmap.set('key', 'value');
+			hashmap.set('key2', 'value2');
+			
+			var map = new HashMap(hashmap);
+			expect(map.count()).to.equal(2);
+			expect(map.get('key')).to.equal('value');
+			expect(map.get('key2')).to.equal('value2');
+		});
+
+		it('should initialize with pairs when several arguments', function() {
+			var map = new HashMap(
+				'key', 'value',
+				'key2', 'value2'
+			);
+			expect(map.count()).to.equal(2);
+			expect(map.get('key')).to.equal('value');
+			expect(map.get('key2')).to.equal('value2');
 		});
 	});
 
