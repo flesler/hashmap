@@ -109,7 +109,7 @@ A regular `Object` used as a map would yield `321`
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Ariel Flesler
+Copyright (c) 2012-2015 Ariel Flesler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -132,4 +132,3 @@ OUT OF
 
 * (?) Allow extending the hashing function in a AOP way or by passing a service
 * Make tests work on the browser
-* Document the public API of HashMap's
