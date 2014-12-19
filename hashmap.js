@@ -5,7 +5,7 @@
  * Homepage: https://github.com/flesler/hashmap
  */
 
-(function (factory) {
+(function(factory) {
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
 		define([], factory);
@@ -16,8 +16,8 @@
 		// Browser globals (this is window)
 		this.HashMap = factory();
 	}
-}(function () {
-	
+}(function() {
+
 	function HashMap(other) {
 		this.clear();
 		switch (arguments.length) {
@@ -34,7 +34,7 @@
 			var data = this._data[this.hash(key)];
 			return data && data[1];
 		},
-		
+
 		set:function(key, value) {
 			// Store original key as well (for iteration)
 			this._data[this.hash(key)] = [key, value];
@@ -49,11 +49,11 @@
 				this._data[key] = other._data[key];
 			}
 		},
-		
+
 		has:function(key) {
 			return this.hash(key) in this._data;
 		},
-		
+
 		search:function(value) {
 			for (var key in this._data) {
 				if (this._data[key][1] === value) {
@@ -63,7 +63,7 @@
 
 			return null;
 		},
-		
+
 		remove:function(key) {
 			delete this._data[this.hash(key)];
 		},
@@ -120,8 +120,9 @@
 
 				case 'array':
 					var hashes = [];
-					for (var i = 0; i < key.length; i++)
+					for (var i = 0; i < key.length; i++) {
 						hashes[i] = this.hash(key[i]);
+					}
 					return '[' + hashes.join('|');
 
 				case 'object':
@@ -182,5 +183,4 @@
 	};
 
 	return HashMap;
-
 }));
