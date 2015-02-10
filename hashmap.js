@@ -1,7 +1,7 @@
 /**
  * HashMap - HashMap Class for JavaScript
  * @author Ariel Flesler <aflesler@gmail.com>
- * @version 2.0.0
+ * @version 2.0.1
  * Homepage: https://github.com/flesler/hashmap
  */
 
@@ -9,9 +9,11 @@
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
 		define([], factory);
-	} else if (typeof exports === 'object') {
+	} else if (typeof module === 'object') {
 		// Node js environment
-		exports.HashMap = factory();
+		var HashMap = module.exports = factory();
+		// Keep it backwards compatible
+		HashMap.HashMap = HashMap;
 	} else {
 		// Browser globals (this is window)
 		this.HashMap = factory();
@@ -125,7 +127,6 @@
 					}
 					return '[' + hashes.join('|');
 
-				case 'object':
 				default:
 					// TODO: Don't use expandos when Object.defineProperty is not available?
 					if (!key._hmuid_) {
@@ -164,7 +165,7 @@
 
 	function multi(map, args) {
 		for (var i = 0; i < args.length; i += 2) {
-			map.set(args[i], args[i+1])
+			map.set(args[i], args[i+1]);
 		}
 	}
 
@@ -180,7 +181,7 @@
 		if (Object.defineProperty) {
 			Object.defineProperty(obj, prop, {enumerable:false});
 		}
-	};
+	}
 
 	return HashMap;
 }));

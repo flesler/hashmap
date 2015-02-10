@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.1
+- AMD CommonJS export is now compatible
+
 ## 2.0.0
 - Added chaining to all methods with no returned value
 - Added multi() method
