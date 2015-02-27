@@ -60,7 +60,7 @@ Assume this for all examples below
 
 If you're using this within Node, you first need to import the class
 
-	var HashMap = require('hashmap').HashMap;
+	var HashMap = require('hashmap');
  
 ### Basic use case
 
