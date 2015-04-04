@@ -1,11 +1,9 @@
+/*jshint -W030 */
 var expect = require('chai').expect,
 	HashMap = require('../hashmap').HashMap,
 	hashmap;
 
 describe('hashmap', function() {
-	before(function() {
-	});
-
 	beforeEach(function() {
 		hashmap = new HashMap();
 	});
@@ -22,10 +20,10 @@ describe('hashmap', function() {
 			check(NaN, 'number');
 			check(1, 'number');
 			check(1.1, 'number');
-			check("1.1", 'string');
-			check("Test", 'string');
+			check('1.1', 'string');
+			check('Test', 'string');
 			check(/test/, 'regexp');
-			check(new Date, 'date');
+			check(new Date(), 'date');
 			check([], 'array');
 			check({}, 'object');
 			check(HashMap, 'function');
@@ -46,24 +44,24 @@ describe('hashmap', function() {
 			check(NaN, 'NaN');
 			check(1, '1');
 			check(1.1, '1.1');
-			check("1.1", '"1.1');
-			check("Test", '"Test');
+			check('1.1', '♠1.1');
+			check('Test', '♠Test');
 		});
 
 		it('should hash objects with primitive representation accurately', function() {
 			check(/test/, '/test/');
-			check(new Date(Date.parse("Fri, 15 Aug 1986 15:05:00 GMT")), ':524502300000');
+			check(new Date(Date.parse('Fri, 15 Aug 1986 15:05:00 GMT')), '♣524502300000');
 		});
 
 		it('should hash arrays accurately', function() {
-			check([], '[');
-			check([1, 2, 3], '[1|2|3');
+			check([], '♥');
+			check([1, 2, 3], '♥1⁞2⁞3');
 		});
 
 		it('should hash unrecognized objects accurately', function() {
-			check({}, '{1');
-			check(HashMap, '{2');
-			check(hashmap, '{3');
+			check({}, '♦1');
+			check(HashMap, '♦2');
+			check(hashmap, '♦3');
 		});
 
 		it('should not add any iterable property to objects', function() {
@@ -140,7 +138,7 @@ describe('hashmap', function() {
 			check(false);
 			check(NaN);
 			check(1);
-			check("Test");
+			check('Test');
 			check(/test/);
 			check(new Date(1986, 7, 15, 12, 5, 0, 0));
 			check([]);
@@ -161,7 +159,7 @@ describe('hashmap', function() {
 			check(false, false);
 			check(NaN, NaN);
 			check(1, 1);
-			check("Test", "Test");
+			check('Test', 'Test');
 			check(/test/, /test/);
 			check(new Date(1986, 7, 15, 12, 5, 0, 0), new Date(1986, 7, 15, 12, 5, 0, 0));
 			check([], []);
@@ -180,9 +178,9 @@ describe('hashmap', function() {
 			check(null, false);
 			check(false, 0);
 			check(false, '');
-			check(1, "1");
+			check(1, '1');
 			check(/test/, /test2/);
-			check(/test/, "/test/");
+			check(/test/, '/test/');
 			check(new Date(123456789), new Date(987654321));
 			check({}, {});
 		});

@@ -1,7 +1,7 @@
 /**
  * HashMap - HashMap Class for JavaScript
  * @author Ariel Flesler <aflesler@gmail.com>
- * @version 2.0.1
+ * @version 2.0.2
  * Homepage: https://github.com/flesler/hashmap
  */
 
@@ -115,17 +115,17 @@
 					return key + '';
 
 				case 'date':
-					return ':' + key.getTime();
+					return '♣' + key.getTime();
 
 				case 'string':
-					return '"' + key;
+					return '♠' + key;
 
 				case 'array':
 					var hashes = [];
 					for (var i = 0; i < key.length; i++) {
 						hashes[i] = this.hash(key[i]);
 					}
-					return '[' + hashes.join('|');
+					return '♥' + hashes.join('⁞');
 
 				default:
 					// TODO: Don't use expandos when Object.defineProperty is not available?
@@ -134,7 +134,7 @@
 						hide(key, '_hmuid_');
 					}
 
-					return '{' + key._hmuid_;
+					return '♦' + key._hmuid_;
 			}
 		},
 

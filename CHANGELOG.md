@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.2
+- Make collisions rarer
+
 ## 2.0.1
 - AMD CommonJS export is now compatible
 
