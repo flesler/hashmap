@@ -138,10 +138,10 @@
 			}
 		},
 
-		forEach:function(func) {
+		forEach:function(func, ctx) {
 			for (var key in this._data) {
 				var data = this._data[key];
-				func.call(this, data[1], data[0]);
+				func.call(ctx || this, data[1], data[0]);
 			}
 		}
 	};
