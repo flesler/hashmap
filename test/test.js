@@ -225,6 +225,14 @@ describe('hashmap', function() {
 			hashmap.set('key2', 'value2');
 			expect(collect()).to.deep.equal(collect());
 		});
+
+		it('should respect forEach context', function() {
+			hashmap.set('key', 'value');
+			var ctx = {};
+			hashmap.forEach(function(value, key) {
+				expect(this).to.equal(ctx);
+			}, ctx);
+		});
 	});
 
 	describe('hashmap.keys()', function() {
