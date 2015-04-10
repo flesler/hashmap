@@ -1,7 +1,7 @@
 {
     "name": "hashmap",
     "author": "Ariel Flesler <aflesler@gmail.com>",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "description": "HashMap Class for JavaScript",
     "keywords": ["hashmap", "map", "object", "array", "associative", "javascript", "nodejs", "node", "browser"],
     "license": "MIT",

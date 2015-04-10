@@ -1,7 +1,7 @@
 /**
  * HashMap - HashMap Class for JavaScript
  * @author Ariel Flesler <aflesler@gmail.com>
- * @version 2.0.2
+ * @version 2.0.3
  * Homepage: https://github.com/flesler/hashmap
  */
 
