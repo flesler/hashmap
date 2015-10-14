@@ -183,6 +183,7 @@ describe('hashmap', function() {
 			check(/test/, '/test/');
 			check(new Date(123456789), new Date(987654321));
 			check({}, {});
+			check(hashmap, Object.create(hashmap));
 		});
 	});
 

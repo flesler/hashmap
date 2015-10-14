@@ -129,7 +129,7 @@
 
 				default:
 					// TODO: Don't use expandos when Object.defineProperty is not available?
-					if (!key._hmuid_) {
+					if (!key.hasOwnProperty('_hmuid_')) {
 						key._hmuid_ = ++HashMap.uid;
 						hide(key, '_hmuid_');
 					}
