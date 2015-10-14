@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.4
+- hasOwnProperty() is used to check for the internal expando, thanks @psionski
+
 ## 2.0.3
 - forEach method accepts a context as 2nd argument (thanks mvayngrib)
 
