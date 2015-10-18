@@ -2,6 +2,8 @@
 
 ## Installation
 
+[![NPM](https://nodei.co/npm/hashmap.png?compact=true)](https://npmjs.org/package/hashmap)
+
 Using npm:
 
     $ npm install hashmap
