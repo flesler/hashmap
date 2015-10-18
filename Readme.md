@@ -4,7 +4,7 @@
 
 [![NPM](https://nodei.co/npm/hashmap.png?compact=true)](https://npmjs.org/package/hashmap)
 
-Using npm:
+Using [npm](https://npmjs.org/package/hashmap):
 
     $ npm install hashmap
 
