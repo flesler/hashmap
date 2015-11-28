@@ -58,54 +58,66 @@ All methods that don't return something, will return the HashMap instance to ena
 
 Assume this for all examples below
 
-	var map = new HashMap();
+```js
+var map = new HashMap();
+```
 
 If you're using this within Node, you first need to import the class
 
-	var HashMap = require('hashmap');
- 
+```js
+var HashMap = require('hashmap');
+```
+
 ### Basic use case
 
-	map.set("some_key", "some value");
-	map.get("some_key"); // --> "some value"
- 
+```js
+map.set("some_key", "some value");
+map.get("some_key"); // --> "some value"
+```
 ### No stringification
 
-	map.set("1", "string one");
-	map.set(1, "number one");
-	map.get("1"); // --> "string one"
+```js
+map.set("1", "string one");
+map.set(1, "number one");
+map.get("1"); // --> "string one"
+```
 
 A regular `Object` used as a map would yield `"number one"`
 
 ### Objects as keys
 
-	var key = {};
-	var key2 = {};
-	map.set(key, 123);
-	map.set(key2, 321);
-	map.get(key); // --> 123
-
+```js
+var key = {};
+var key2 = {};
+map.set(key, 123);
+map.set(key2, 321);
+map.get(key); // --> 123
+```
 A regular `Object` used as a map would yield `321`
 
 ### Iterating
 
-    map.set(1, "test 1");
-    map.set(2, "test 2");
-    map.set(3, "test 3");
-    
-    map.forEach(function(value, key) {
-        console.log(key + " : " + value);
-    });
+```js
+map.set(1, "test 1");
+map.set(2, "test 2");
+map.set(3, "test 3");
+
+map.forEach(function(value, key) {
+    console.log(key + " : " + value);
+});
+```
 
 ### Method chaining
 
-    map
-    	.set(1, "test 1")
-    	.set(2, "test 2")
-    	.set(3, "test 3")
-	    .forEach(function(value, key) {
-	        console.log(key + " : " + value);
-	    });
+```js
+map
+  .set(1, "test 1")
+  .set(2, "test 2")
+  .set(3, "test 3")
+  .forEach(function(value, key) {
+      console.log(key + " : " + value);
+  });
+```
 
 ## LICENSE
 
@@ -130,7 +142,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF
 
-## TODO's
+## To-Do
 
 * (?) Allow extending the hashing function in a AOP way or by passing a service
 * Make tests work on the browser
