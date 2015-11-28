@@ -142,7 +142,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF
 
-## TODO's
+## TODOs
 
 * (?) Allow extending the hashing function in a AOP way or by passing a service
 * Make tests work on the browser
