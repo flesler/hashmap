@@ -39,7 +39,11 @@
 
 		set:function(key, value) {
 			// Store original key as well (for iteration)
-			this._data[this.hash(key)] = [key, value];
+			var hash = this.hash(key);
+			if ( !(hash in this._data) ) {
+				this._count++;
+			}
+			this._data[hash] = [key, value];
 		},
 
 		multi:function() {
@@ -47,8 +51,11 @@
 		},
 
 		copy:function(other) {
-			for (var key in other._data) {
-				this._data[key] = other._data[key];
+			for (var hash in other._data) {
+				if ( !(hash in this._data) ) {
+					this._count++;
+				}
+				this._data[hash] = other._data[hash];
 			}
 		},
 
@@ -67,7 +74,11 @@
 		},
 
 		remove:function(key) {
-			delete this._data[this.hash(key)];
+			var hash = this.hash(key);
+			if ( hash in this._data ) {
+				this._count--;
+				delete this._data[hash];
+			}
 		},
 
 		type:function(key) {
@@ -93,12 +104,13 @@
 		},
 
 		count:function() {
-			return this.keys().length;
+			return this._count;
 		},
 
 		clear:function() {
 			// TODO: Would Object.create(null) make any difference
 			this._data = {};
+			this._count = 0;
 		},
 
 		clone:function() {
