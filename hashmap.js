@@ -1,7 +1,7 @@
 /**
  * HashMap - HashMap Class for JavaScript
  * @author Ariel Flesler <aflesler@gmail.com>
- * @version 2.0.3
+ * @version 2.0.5
  * Homepage: https://github.com/flesler/hashmap
  */
 
@@ -93,7 +93,7 @@
 
 		keys:function() {
 			var keys = [];
-			this.forEach(function(value, key) { keys.push(key); });
+			this.forEach(function(_, key) { keys.push(key); });
 			return keys;
 		},
 

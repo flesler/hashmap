@@ -294,7 +294,11 @@ describe('hashmap', function() {
 
 		it('should decrease when removing a key', function() {
 			hashmap.set('key', 'value');
+			hashmap.set('key2', 'value');
 			hashmap.remove('key');
+			expect(hashmap.count()).to.equal(1);
+
+			hashmap.remove('key2');
 			expect(hashmap.count()).to.equal(0);
 		});
 	});

@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.5
+- count() is now O(1), thanks @qbolec
+
 ## 2.0.4
 - hasOwnProperty() is used to check for the internal expando, thanks @psionski
 

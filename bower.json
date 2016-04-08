@@ -1,6 +1,6 @@
 {
   "name": "hashmap",
-  "version": "2.0.3",
+  "version": "2.0.5",
   "description": "HashMap Class for JavaScript",
   "homepage": "https://github.com/flesler/hashmap",
   "main": "./hashmap.js",

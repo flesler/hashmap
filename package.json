@@ -1,22 +1,35 @@
 {
-    "name": "hashmap",
-    "author": "Ariel Flesler <aflesler@gmail.com>",
-    "version": "2.0.4",
-    "description": "HashMap Class for JavaScript",
-    "keywords": ["hashmap", "map", "object", "array", "associative", "javascript", "nodejs", "node", "browser"],
-    "license": "MIT",
-    "homepage": "https://github.com/flesler/hashmap",
-    "bugs": "https://github.com/flesler/hashmap/issues",
-    "repository": "git://github.com/flesler/hashmap",
-    "main": "./hashmap.js",
-    "scripts": {
-      "test": "mocha test/*.js"
-    },
-    "engines": { "node": "*" },
-    "dependencies": {},
-    "devDependencies": {
-      "mocha": "*",
-      "chai": "*"
-    }
+  "name": "hashmap",
+  "author": "Ariel Flesler <aflesler@gmail.com>",
+  "version": "2.0.5",
+  "description": "HashMap Class for JavaScript",
+  "keywords": [
+    "hashmap",
+    "map",
+    "object",
+    "array",
+    "associative",
+    "javascript",
+    "nodejs",
+    "node",
+    "browser"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/flesler/hashmap",
+  "bugs": "https://github.com/flesler/hashmap/issues",
+  "repository": "git://github.com/flesler/hashmap",
+  "main": "./hashmap.js",
+  "scripts": {
+    "test": "mocha test/*.js",
+    "prepush": "npm test -- --reporter dot"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "husky": "^0.11.4",
+    "mocha": "^2.4.5"
+  }
 }
-
