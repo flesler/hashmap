@@ -1,7 +1,7 @@
 {
   "name": "hashmap",
   "author": "Ariel Flesler <aflesler@gmail.com>",
-  "version": "2.0.5",
+  "version": "2.0.5-minfiedBugFix",
   "description": "HashMap Class for JavaScript",
   "keywords": [
     "hashmap",
