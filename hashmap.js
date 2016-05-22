@@ -161,10 +161,9 @@
 	HashMap.uid = 0;
 
 	//- Add chaining to some methods
-    var chainMethod = {set:1,multi:1,copy:1,remove:1,clear:1,forEach:1}
-	for (var method in chainMethod) {
-		proto[method] = chain(proto[method])
-	}
+    ['set','multi','copy','remove','clear','forEach'].forEach(function(method) {
+        proto[method] = chain(proto[method]);
+    });
 
 	//- Utils
 
