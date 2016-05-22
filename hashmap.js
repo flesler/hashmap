@@ -160,18 +160,10 @@
 
 	HashMap.uid = 0;
 
-	//- Automatically add chaining to some methods
-
-	for (var method in proto) {
-		// Skip constructor, valueOf, toString and any other built-in method
-		if (method === 'constructor' || !proto.hasOwnProperty(method)) {
-			continue;
-		}
-		var fn = proto[method];
-		if (fn.toString().indexOf('return ') === -1) {
-			proto[method] = chain(fn);
-		}
-	}
+	//- Add chaining to some methods
+    ['set','multi','copy','remove','clear','forEach'].forEach(function(method) {
+        proto[method] = chain(proto[method]);
+    });
 
 	//- Utils
 
