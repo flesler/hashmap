@@ -1,7 +1,7 @@
 {
   "name": "hashmap",
   "author": "Ariel Flesler <aflesler@gmail.com>",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "HashMap Class for JavaScript",
   "keywords": [
     "hashmap",
@@ -20,16 +20,17 @@
   "repository": "git://github.com/flesler/hashmap",
   "main": "./hashmap.js",
   "scripts": {
-    "test": "mocha test/*.js",
-    "prepush": "npm test -- --reporter dot"
+    "precommit": "jshint hashmap.js",
+    "prepush": "mocha test/ --reporter dot"
   },
   "engines": {
     "node": "*"
   },
   "dependencies": {},
   "devDependencies": {
-    "chai": "^3.5.0",
-    "husky": "^0.11.4",
-    "mocha": "^2.4.5"
+    "chai": "3.5.0",
+    "husky": "0.11.4",
+    "jshint": "2.9.2",
+    "mocha": "2.5.1"
   }
 }

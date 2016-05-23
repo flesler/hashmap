@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.6
+- Names of chained methods is hardcoded rather than using the "return" trick. Fixes bug when minified, thanks @fresheneesz.
+- Added jshint to be run before any commit
+
 ## 2.0.5
 - count() is now O(1), thanks @qbolec
 
@@ -7,7 +11,7 @@
 - hasOwnProperty() is used to check for the internal expando, thanks @psionski
 
 ## 2.0.3
-- forEach method accepts a context as 2nd argument (thanks mvayngrib)
+- forEach method accepts a context as 2nd argument, thanks @mvayngrib
 
 ## 2.0.2
 - Make collisions rarer
@@ -23,10 +27,10 @@
 - constructor accepts one argument for cloning or several for multi()
 
 ## 1.2.0
-- Added search() method, (thanks rafalwrzeszcz)
+- Added search() method, thanks @rafalwrzeszcz
 
 ## 1.1.0
-- AMD support, (thanks khrome)
+- AMD support, thanks @khrome
 
 ## 1.0.1
 - forEach() callback receives the hashmap as `this`

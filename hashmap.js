@@ -1,11 +1,12 @@
 /**
  * HashMap - HashMap Class for JavaScript
  * @author Ariel Flesler <aflesler@gmail.com>
- * @version 2.0.5
+ * @version 2.0.6
  * Homepage: https://github.com/flesler/hashmap
  */
 
 (function(factory) {
+	/* global define */
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
 		define([], factory);
@@ -160,18 +161,15 @@
 
 	HashMap.uid = 0;
 
-	//- Automatically add chaining to some methods
+	//- Add chaining to all methods that don't return something
 
-	for (var method in proto) {
-		// Skip constructor, valueOf, toString and any other built-in method
-		if (method === 'constructor' || !proto.hasOwnProperty(method)) {
-			continue;
-		}
+	['set','multi','copy','remove','clear','forEach'].forEach(function(method) {
 		var fn = proto[method];
-		if (fn.toString().indexOf('return ') === -1) {
-			proto[method] = chain(fn);
-		}
-	}
+		proto[method] = function() {
+			fn.apply(this, arguments);
+			return this;
+		};
+	});
 
 	//- Utils
 
@@ -179,13 +177,6 @@
 		for (var i = 0; i < args.length; i += 2) {
 			map.set(args[i], args[i+1]);
 		}
-	}
-
-	function chain(fn) {
-		return function() {
-			fn.apply(this, arguments);
-			return this;
-		};
 	}
 
 	function hide(obj, prop) {
