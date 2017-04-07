@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.0
+- support ECMA 5 non-conformant behaviour of Microsoft edge #27. Thanks @freddiecoleman
+
 ## 2.0.6
 - Names of chained methods is hardcoded rather than using the "return" trick. Fixes bug when minified, thanks @fresheneesz.
 - Added jshint to be run before any commit
