@@ -85,8 +85,8 @@
 		type:function(key) {
 			var str = Object.prototype.toString.call(key);
 			var type = str.slice(8, -1).toLowerCase();
-			// Some browsers yield DOMWindow for null and undefined, works fine on Node
-			if (type === 'domwindow' && !key) {
+			// Some browsers yield DOMWindow or Window for null and undefined, works fine on Node
+			if (type === 'domwindow' || type === 'window' && !key) {
 				return key + '';
 			}
 			return type;
