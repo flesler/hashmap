@@ -74,7 +74,7 @@
 			return null;
 		},
 
-		remove:function(key) {
+		delete:function(key) {
 			var hash = this.hash(key);
 			if ( hash in this._data ) {
 				this._count--;
@@ -167,7 +167,7 @@
 	};
 
 	// ES6 Map API compatibility
-	HashMap.prototype.delete = HashMap.prototype.remove;
+	HashMap.prototype.remove = HashMap.prototype.delete;
 
 	HashMap.uid = 0;
 
