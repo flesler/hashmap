@@ -82,10 +82,6 @@
 			}
 		},
 
-		delete:function(key) {
-			this.remove(key);
-		},
-
 		type:function(key) {
 			var str = Object.prototype.toString.call(key);
 			var type = str.slice(8, -1).toLowerCase();
@@ -169,6 +165,9 @@
 			}
 		}
 	};
+
+	// ES6 Map API compatibility
+	HashMap.prototype.delete = HashMap.prototype.remove;
 
 	HashMap.uid = 0;
 
