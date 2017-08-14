@@ -104,6 +104,13 @@
 			return values;
 		},
 
+		entries:function() {
+			var entries = [];
+			this.forEach(function(value, key) { entries.push([key, value]); });
+			return entries;
+		},
+
+
 		count:function() {
 			return this._count;
 		},

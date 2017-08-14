@@ -44,6 +44,7 @@ Unlike regular objects, __keys will not be stringified__. For example numbers an
 - `type(key:*) : String` returns the data type of the provided key (used internally)
 - `keys() : Array<*>` returns an array with all the registered keys
 - `values() : Array<*>` returns an array with all the values
+- `entries() : Array<[*,*]>` returns an array with [key,value] pairs
 - `count() : Number` returns the amount of key-value pairs
 - `clear() : HashMap` removes all the key-value pairs on the hashmap
 - `clone() : HashMap` creates a new hashmap with all the key-value pairs of the original

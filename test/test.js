@@ -288,6 +288,23 @@ describe('hashmap', function() {
 		});
 	});
 
+	describe('hashmap.entries()', function() {
+		it('should return an empty array for an empty hashmap', function() {
+			expect(hashmap.entries()).to.be.empty;
+		});
+
+		it('should return an array with one value once added', function() {
+			hashmap.set('key', 'value');
+			expect(hashmap.entries()).to.deep.equal([['key','value']]);
+		});
+
+		it('should work for several values', function() {
+			hashmap.set('key', 'value');
+			hashmap.set('key2', 'value2');
+			expect(hashmap.entries()).to.deep.equal([['key','value'], ['key2','value2']]);
+		});
+	});
+
 	describe('hashmap.count()', function() {
 		it('should return 0 when nothing was added', function() {
 			expect(hashmap.count()).to.equal(0);
