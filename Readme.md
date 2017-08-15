@@ -40,13 +40,14 @@ Unlike regular objects, __keys will not be stringified__. For example numbers an
 - `copy(other:HashMap) : HashMap` copies all key-value pairs from other to this instance
 - `has(key:*) : Boolean` returns whether a key is set on the hashmap
 - `search(value:*) : *` returns key under which given value is stored (`null` if not found)
-- `remove(key:*) : HashMap` deletes a key-value pair by key
+- `delete(key:*) : HashMap` deletes a key-value pair by key
+- `remove(key:*) : HashMap` Alias for `delete(key:*)` *(deprecated)*
 - `type(key:*) : String` returns the data type of the provided key (used internally)
 - `keys() : Array<*>` returns an array with all the registered keys
 - `values() : Array<*>` returns an array with all the values
 - `entries() : Array<[*,*]>` returns an array with [key,value] pairs
 - `count() : Number` returns the amount of key-value pairs
-- `clear() : HashMap` removes all the key-value pairs on the hashmap
+- `clear() : HashMap` deletes all the key-value pairs on the hashmap
 - `clone() : HashMap` creates a new hashmap with all the key-value pairs of the original
 - `hash(key:*) : String` returns the stringified version of a key (used internally)
 - `forEach(function(value, key)) : HashMap` iterates the pairs and calls the function for each one
@@ -75,6 +76,15 @@ var HashMap = require('hashmap');
 map.set("some_key", "some value");
 map.get("some_key"); // --> "some value"
 ```
+
+### Deleting key-value pairs
+
+```js
+map.set("some_key", "some value");
+map.delete("some_key");
+map.get("some_key"); // --> undefined
+```
+
 ### No stringification
 
 ```js
