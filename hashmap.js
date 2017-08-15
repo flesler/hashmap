@@ -25,7 +25,15 @@
 		this.clear();
 		switch (arguments.length) {
 			case 0: break;
-			case 1: this.copy(other); break;
+			case 1: {
+				if ('length' in other) {
+					// Flatten 2D array to alternating key-value array
+					multi(this, Array.prototype.concat.apply([], other));
+				} else { // Assumed to be a HashMap instance
+					this.copy(other);
+				}
+				break;
+			}
 			default: multi(this, arguments); break;
 		}
 	}

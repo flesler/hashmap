@@ -441,6 +441,26 @@ describe('hashmap', function() {
 			expect(map.get('key2')).to.equal('value2');
 		});
 
+		it('should initialize from a 2D array for a single Array argument', function() {
+			var map = new HashMap(
+				[['key', 'value'],
+				 ['key2', 'value2']]
+			);
+			expect(map.count()).to.equal(2);
+			expect(map.get('key')).to.equal('value');
+			expect(map.get('key2')).to.equal('value2');
+		});
+
+		it('should initialize from a 2D array for a nested Array argument', function() {
+			var map = new HashMap(
+				[[[1, 'key'], ['value', 1]],
+				 [[2, 'key2'], ['value2', 2]]]
+			);
+			expect(map.count()).to.equal(2);
+			expect(map.get([1, 'key'])).to.deep.equal(['value', 1]);
+			expect(map.get([2, 'key2'])).to.deep.equal(['value2', 2]);
+		});
+
 		it('should initialize with pairs when several arguments', function() {
 			var map = new HashMap(
 				'key', 'value',
