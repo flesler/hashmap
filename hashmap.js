@@ -26,9 +26,11 @@
 		switch (arguments.length) {
 			case 0: break;
 			case 1: {
-				if(Array.isArray(other)) {
-					this.from2DArray(other);
-				} else {
+				if ('length' in other) {
+					// Flatten 2D array to alternating key-value array
+					multi(this, 
+						Array.prototype.concat.apply([], other));
+				} else { // Assumed to be a HashMap instance
 					this.copy(other);
 				}
 				break;
@@ -56,13 +58,6 @@
 
 		multi:function() {
 			multi(this, arguments);
-		},
-
-
-		from2DArray:function(arr) {
-			for (var i in arr) {
-				this.set(arr[i][0], arr[i][1]);
-			}
 		},
 
 		copy:function(other) {
