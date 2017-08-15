@@ -46,7 +46,8 @@ Unlike regular objects, __keys will not be stringified__. For example numbers an
 - `keys() : Array<*>` returns an array with all the registered keys
 - `values() : Array<*>` returns an array with all the values
 - `entries() : Array<[*,*]>` returns an array with [key,value] pairs
-- `count() : Number` returns the amount of key-value pairs
+- `size : Number` the amount of key-value pairs
+- `count() : Number` returns the amount of key-value pairs *(deprecated)*
 - `clear() : HashMap` removes all the key-value pairs on the hashmap
 - `clone() : HashMap` creates a new hashmap with all the key-value pairs of the original
 - `hash(key:*) : String` returns the stringified version of a key (used internally)
@@ -76,6 +77,16 @@ var HashMap = require('hashmap');
 map.set("some_key", "some value");
 map.get("some_key"); // --> "some value"
 ```
+
+### Map size / number of elements
+
+```js
+var map = new HashMap();
+map.set("key1", "val1");
+map.set("key2", "val2");
+map.size; // -> 2
+```
+
 ### No stringification
 
 ```js

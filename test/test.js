@@ -305,26 +305,32 @@ describe('hashmap', function() {
 		});
 	});
 
-	describe('hashmap.count()', function() {
+	describe('hashmap.count() and hashmap.size', function() {
+		// NOTE: count() is expected to return .size, this
+		//   will be checked only in this unit test!
 		it('should return 0 when nothing was added', function() {
 			expect(hashmap.count()).to.equal(0);
+			expect(hashmap.size).to.equal(0);
 		});
 
 		it('should return 1 once an entry was added', function() {
 			hashmap.set('key', 'value');
 			expect(hashmap.count()).to.equal(1);
+			expect(hashmap.size).to.equal(1);
 		});
 
 		it('should not increase when setting an existing key', function() {
 			hashmap.set('key', 'value');
 			hashmap.set('key', 'value2');
 			expect(hashmap.count()).to.equal(1);
+			expect(hashmap.size).to.equal(1);
 		});
 
 		it('should increase when setting different key', function() {
 			hashmap.set('key', 'value');
 			hashmap.set('key2', 'value2');
 			expect(hashmap.count()).to.equal(2);
+			expect(hashmap.size).to.equal(2);
 		});
 
 		it('should decrease when removing a key', function() {
@@ -332,9 +338,11 @@ describe('hashmap', function() {
 			hashmap.set('key2', 'value');
 			hashmap.remove('key');
 			expect(hashmap.count()).to.equal(1);
+			expect(hashmap.size).to.equal(1);
 
 			hashmap.remove('key2');
 			expect(hashmap.count()).to.equal(0);
+			expect(hashmap.size).to.equal(0);
 		});
 	});
 
