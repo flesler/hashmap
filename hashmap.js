@@ -166,20 +166,21 @@
 		}
 	};
 
-	// ES6 Map API compatibility
-	HashMap.prototype.remove = HashMap.prototype.delete;
-
 	HashMap.uid = 0;
 
 	//- Add chaining to all methods that don't return something
 
-	['set','multi','copy','delete','remove','clear','forEach'].forEach(function(method) {
+	['set','multi','copy','delete','clear','forEach'].forEach(function(method) {
 		var fn = proto[method];
 		proto[method] = function() {
 			fn.apply(this, arguments);
 			return this;
 		};
 	});
+
+	//- Backwards compatibility
+
+	HashMap.prototype.remove = HashMap.prototype.delete;
 
 	//- Utils
 

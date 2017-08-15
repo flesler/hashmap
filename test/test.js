@@ -142,15 +142,8 @@ describe('hashmap', function() {
 	});
 
 	describe('hashmap.remove()', function() {
-		it('should delete an entry by key', function() {
-			hashmap.set('key', 'value1');
-			hashmap.remove('key');
-			expect(hashmap.has('key')).to.be.false;
-		});
-
-		it('should not fail when the key is not found', function() {
-			hashmap.remove('key');
-			expect(hashmap.has('key')).to.be.false;
+		it('should be the same function as delete', function() {
+			expect(hashmap.remove).to.equal(hashmap.delete);
 		});
 	});
 
