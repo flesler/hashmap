@@ -25,7 +25,15 @@
 		this.clear();
 		switch (arguments.length) {
 			case 0: break;
-			case 1: this.copy(other); break;
+			case 1: {
+				if ('length' in other) {
+					// Flatten 2D array to alternating key-value array
+					multi(this, Array.prototype.concat.apply([], other));
+				} else { // Assumed to be a HashMap instance
+					this.copy(other);
+				}
+				break;
+			}
 			default: multi(this, arguments); break;
 		}
 	}
@@ -42,7 +50,7 @@
 			// Store original key as well (for iteration)
 			var hash = this.hash(key);
 			if ( !(hash in this._data) ) {
-				this._count++;
+				this.size++;
 			}
 			this._data[hash] = [key, value];
 		},
@@ -54,7 +62,7 @@
 		copy:function(other) {
 			for (var hash in other._data) {
 				if ( !(hash in this._data) ) {
-					this._count++;
+					this.size++;
 				}
 				this._data[hash] = other._data[hash];
 			}
@@ -74,10 +82,10 @@
 			return null;
 		},
 
-		remove:function(key) {
+		delete:function(key) {
 			var hash = this.hash(key);
 			if ( hash in this._data ) {
-				this._count--;
+				this.size--;
 				delete this._data[hash];
 			}
 		},
@@ -110,15 +118,15 @@
 			return entries;
 		},
 
-
+		// TODO: This is deprecated and will be deleted in a future version
 		count:function() {
-			return this._count;
+			return this.size;
 		},
 
 		clear:function() {
 			// TODO: Would Object.create(null) make any difference
 			this._data = {};
-			this._count = 0;
+			this.size = 0;
 		},
 
 		clone:function() {
@@ -170,13 +178,18 @@
 
 	//- Add chaining to all methods that don't return something
 
-	['set','multi','copy','remove','clear','forEach'].forEach(function(method) {
+	['set','multi','copy','delete','clear','forEach'].forEach(function(method) {
 		var fn = proto[method];
 		proto[method] = function() {
 			fn.apply(this, arguments);
 			return this;
 		};
 	});
+
+	//- Backwards compatibility
+
+	// TODO: remove() is deprecated and will be deleted in a future version
+	HashMap.prototype.remove = HashMap.prototype.delete;
 
 	//- Utils
 

@@ -96,6 +96,7 @@ describe('hashmap', function() {
 		it('should return the instance on some methods', function() {
 			expect(hashmap.set('key', 'value')).to.equal(hashmap);
 			expect(hashmap.multi()).to.equal(hashmap);
+			expect(hashmap.delete('key')).to.equal(hashmap);
 			expect(hashmap.remove('key')).to.equal(hashmap);
 			expect(hashmap.copy(hashmap)).to.equal(hashmap);
 			expect(hashmap.clear()).to.equal(hashmap);
@@ -127,16 +128,22 @@ describe('hashmap', function() {
 		});
 	});
 
-	describe('hashmap.remove()', function() {
-		it('should remove an entry by key', function() {
+	describe('hashmap.delete()', function() {
+		it('should delete an entry by key', function() {
 			hashmap.set('key', 'value1');
-			hashmap.remove('key');
+			hashmap.delete('key');
 			expect(hashmap.has('key')).to.be.false;
 		});
 
 		it('should not fail when the key is not found', function() {
-			hashmap.remove('key');
+			hashmap.delete('key');
 			expect(hashmap.has('key')).to.be.false;
+		});
+	});
+
+	describe('hashmap.remove()', function() {
+		it('should be the same function as delete', function() {
+			expect(hashmap.remove).to.equal(hashmap.delete);
 		});
 	});
 
@@ -233,9 +240,9 @@ describe('hashmap', function() {
 			expect(collect().length).to.equal(2);
 		});
 
-		it('should not call the callback on removed keys', function() {
+		it('should not call the callback on delete keys', function() {
 			hashmap.set('key', 'value');
-			hashmap.remove('key');
+			hashmap.delete('key');
 			expect(collect()).to.be.empty;
 		});
 
@@ -305,36 +312,44 @@ describe('hashmap', function() {
 		});
 	});
 
-	describe('hashmap.count()', function() {
+	describe('hashmap.count() and hashmap.size', function() {
+		// NOTE: count() is expected to return .size, this
+		//   will be checked only in this unit test!
 		it('should return 0 when nothing was added', function() {
 			expect(hashmap.count()).to.equal(0);
+			expect(hashmap.size).to.equal(0);
 		});
 
 		it('should return 1 once an entry was added', function() {
 			hashmap.set('key', 'value');
 			expect(hashmap.count()).to.equal(1);
+			expect(hashmap.size).to.equal(1);
 		});
 
 		it('should not increase when setting an existing key', function() {
 			hashmap.set('key', 'value');
 			hashmap.set('key', 'value2');
 			expect(hashmap.count()).to.equal(1);
+			expect(hashmap.size).to.equal(1);
 		});
 
 		it('should increase when setting different key', function() {
 			hashmap.set('key', 'value');
 			hashmap.set('key2', 'value2');
 			expect(hashmap.count()).to.equal(2);
+			expect(hashmap.size).to.equal(2);
 		});
 
-		it('should decrease when removing a key', function() {
+		it('should decrease when deleting a key', function() {
 			hashmap.set('key', 'value');
 			hashmap.set('key2', 'value');
-			hashmap.remove('key');
+			hashmap.delete('key');
 			expect(hashmap.count()).to.equal(1);
+			expect(hashmap.size).to.equal(1);
 
-			hashmap.remove('key2');
+			hashmap.delete('key2');
 			expect(hashmap.count()).to.equal(0);
+			expect(hashmap.size).to.equal(0);
 		});
 	});
 
@@ -344,13 +359,13 @@ describe('hashmap', function() {
 			expect(hashmap.count()).to.equal(0);
 		});
 
-		it('should remove the only entry', function() {
+		it('should delete the only entry', function() {
 			hashmap.set('key', 'value');
 			hashmap.clear();
 			expect(hashmap.count()).to.equal(0);
 		});
 
-		it('should remove multiple entries', function() {
+		it('should delete multiple entries', function() {
 			hashmap.set('key', 'value');
 			hashmap.set('key2', 'value2');
 			hashmap.clear();
@@ -439,6 +454,26 @@ describe('hashmap', function() {
 			expect(map.count()).to.equal(2);
 			expect(map.get('key')).to.equal('value');
 			expect(map.get('key2')).to.equal('value2');
+		});
+
+		it('should initialize from a 2D array for a single Array argument', function() {
+			var map = new HashMap(
+				[['key', 'value'],
+				 ['key2', 'value2']]
+			);
+			expect(map.count()).to.equal(2);
+			expect(map.get('key')).to.equal('value');
+			expect(map.get('key2')).to.equal('value2');
+		});
+
+		it('should initialize from a 2D array for a nested Array argument', function() {
+			var map = new HashMap(
+				[[[1, 'key'], ['value', 1]],
+				 [[2, 'key2'], ['value2', 2]]]
+			);
+			expect(map.count()).to.equal(2);
+			expect(map.get([1, 'key'])).to.deep.equal(['value', 1]);
+			expect(map.get([2, 'key2'])).to.deep.equal(['value2', 2]);
 		});
 
 		it('should initialize with pairs when several arguments', function() {
