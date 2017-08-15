@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.0
+- Constructor now supports a 2D array 2D of key-value pair. Thanks @ulikoehler
+- Renamed `remove()` to `delete()`. `remove()` is now deprecated and kept temporarily. Thanks @ulikoehler
+- Added `.size` member. `count()` is now deprecated and kept temporarily. Thanks @ulikoehler
+
 ## 2.2.0
 - Added entries() method to hashmaps. Thanks @ulikoehler
 
