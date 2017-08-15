@@ -110,7 +110,7 @@
 			return entries;
 		},
 
-
+		// TODO: This is deprecated and will be deleted in a future version
 		count:function() {
 			return this.size;
 		},
