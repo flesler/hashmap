@@ -180,6 +180,7 @@
 
 	//- Backwards compatibility
 
+	// TODO: remove() is deprecated and will be deleted in a future version
 	HashMap.prototype.remove = HashMap.prototype.delete;
 
 	//- Utils
