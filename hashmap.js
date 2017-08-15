@@ -82,7 +82,7 @@
 			return null;
 		},
 
-		remove:function(key) {
+		delete:function(key) {
 			var hash = this.hash(key);
 			if ( hash in this._data ) {
 				this.size--;
@@ -178,13 +178,18 @@
 
 	//- Add chaining to all methods that don't return something
 
-	['set','multi','copy','remove','clear','forEach'].forEach(function(method) {
+	['set','multi','copy','delete','clear','forEach'].forEach(function(method) {
 		var fn = proto[method];
 		proto[method] = function() {
 			fn.apply(this, arguments);
 			return this;
 		};
 	});
+
+	//- Backwards compatibility
+
+	// TODO: remove() is deprecated and will be deleted in a future version
+	HashMap.prototype.remove = HashMap.prototype.delete;
 
 	//- Utils
 
