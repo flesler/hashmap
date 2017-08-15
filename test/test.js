@@ -96,6 +96,7 @@ describe('hashmap', function() {
 		it('should return the instance on some methods', function() {
 			expect(hashmap.set('key', 'value')).to.equal(hashmap);
 			expect(hashmap.multi()).to.equal(hashmap);
+			expect(hashmap.delete('key')).to.equal(hashmap);
 			expect(hashmap.remove('key')).to.equal(hashmap);
 			expect(hashmap.copy(hashmap)).to.equal(hashmap);
 			expect(hashmap.clear()).to.equal(hashmap);
