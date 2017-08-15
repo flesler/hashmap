@@ -240,9 +240,9 @@ describe('hashmap', function() {
 			expect(collect().length).to.equal(2);
 		});
 
-		it('should not call the callback on removed keys', function() {
+		it('should not call the callback on delete keys', function() {
 			hashmap.set('key', 'value');
-			hashmap.remove('key');
+			hashmap.delete('key');
 			expect(collect()).to.be.empty;
 		});
 
@@ -334,13 +334,13 @@ describe('hashmap', function() {
 			expect(hashmap.count()).to.equal(2);
 		});
 
-		it('should decrease when removing a key', function() {
+		it('should decrease when deleting a key', function() {
 			hashmap.set('key', 'value');
 			hashmap.set('key2', 'value');
-			hashmap.remove('key');
+			hashmap.delete('key');
 			expect(hashmap.count()).to.equal(1);
 
-			hashmap.remove('key2');
+			hashmap.delete('key2');
 			expect(hashmap.count()).to.equal(0);
 		});
 	});
@@ -351,13 +351,13 @@ describe('hashmap', function() {
 			expect(hashmap.count()).to.equal(0);
 		});
 
-		it('should remove the only entry', function() {
+		it('should delete the only entry', function() {
 			hashmap.set('key', 'value');
 			hashmap.clear();
 			expect(hashmap.count()).to.equal(0);
 		});
 
-		it('should remove multiple entries', function() {
+		it('should delete multiple entries', function() {
 			hashmap.set('key', 'value');
 			hashmap.set('key2', 'value2');
 			hashmap.clear();
