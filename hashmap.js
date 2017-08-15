@@ -42,7 +42,7 @@
 			// Store original key as well (for iteration)
 			var hash = this.hash(key);
 			if ( !(hash in this._data) ) {
-				this._count++;
+				this.size++;
 			}
 			this._data[hash] = [key, value];
 		},
@@ -54,7 +54,7 @@
 		copy:function(other) {
 			for (var hash in other._data) {
 				if ( !(hash in this._data) ) {
-					this._count++;
+					this.size++;
 				}
 				this._data[hash] = other._data[hash];
 			}
@@ -77,7 +77,7 @@
 		remove:function(key) {
 			var hash = this.hash(key);
 			if ( hash in this._data ) {
-				this._count--;
+				this.size--;
 				delete this._data[hash];
 			}
 		},
@@ -110,15 +110,15 @@
 			return entries;
 		},
 
-
+		// TODO: This is deprecated and will be deleted in a future version
 		count:function() {
-			return this._count;
+			return this.size;
 		},
 
 		clear:function() {
 			// TODO: Would Object.create(null) make any difference
 			this._data = {};
-			this._count = 0;
+			this.size = 0;
 		},
 
 		clone:function() {
