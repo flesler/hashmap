@@ -77,7 +77,7 @@ map.set("some_key", "some value");
 map.get("some_key"); // --> "some value"
 ```
 
-### Map size
+### Map size / number of elements
 
 ```js
 var map = new HashMap();
