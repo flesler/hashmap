@@ -25,7 +25,14 @@
 		this.clear();
 		switch (arguments.length) {
 			case 0: break;
-			case 1: this.copy(other); break;
+			case 1: {
+				if(Array.isArray(other)) {
+					this.from2DArray(other);
+				} else {
+					this.copy(other);
+				}
+				break;
+			}
 			default: multi(this, arguments); break;
 		}
 	}
@@ -49,6 +56,13 @@
 
 		multi:function() {
 			multi(this, arguments);
+		},
+
+
+		from2DArray:function(arr) {
+			for (var i in arr) {
+				this.set(arr[i][0], arr[i][1]);
+			}
 		},
 
 		copy:function(other) {

@@ -441,6 +441,16 @@ describe('hashmap', function() {
 			expect(map.get('key2')).to.equal('value2');
 		});
 
+		it('should initialize from a 2D array for a single Array argument', function() {
+			var map = new HashMap(
+				[['key', 'value'],
+				 ['key2', 'value2']]
+			);
+			expect(map.count()).to.equal(2);
+			expect(map.get('key')).to.equal('value');
+			expect(map.get('key2')).to.equal('value2');
+		});
+
 		it('should initialize with pairs when several arguments', function() {
 			var map = new HashMap(
 				'key', 'value',
