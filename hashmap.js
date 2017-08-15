@@ -173,7 +173,7 @@
 
 	//- Add chaining to all methods that don't return something
 
-	['set','multi','copy','remove','clear','forEach'].forEach(function(method) {
+	['set','multi','copy','delete','remove','clear','forEach'].forEach(function(method) {
 		var fn = proto[method];
 		proto[method] = function() {
 			fn.apply(this, arguments);
