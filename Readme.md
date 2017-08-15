@@ -30,6 +30,7 @@ Unlike regular objects, __keys will not be stringified__. For example numbers an
 ## HashMap constructor overloads
 - `new HashMap()` creates an empty hashmap
 - `new HashMap(map:HashMap)` creates a hashmap with the key-value pairs of `map`
+- `new HashMap(arr:Array)` creates a hashmap from the 2D key-value array `arr`, e.g. `[['key1','val1'], ['key2','val2']]`
 - `new HashMap(key:*, value:*, key2:*, value2:*, ...)` creates a hashmap with several key-value pairs
 
 ## HashMap methods
