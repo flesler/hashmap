@@ -1,4 +1,4 @@
-/*jshint -W030 */
+/*jshint -W030,-W121 */
 var expect = require('chai').expect,
 	HashMap = require('../hashmap').HashMap,
 	hashmap;
@@ -30,23 +30,23 @@ describe('hashmap', function() {
 			check(hashmap, 'object');
 		});
 
-        	it('should cast type for browsers that don\'t conform to ECMA 5 spec', function() {
-            		var originalToString = Object.prototype.toString;
-            		var type = 'DOMWindow';
+		it('should cast type for browsers that don\'t conform to ECMA 5 spec', function() {
+			var originalToString = Object.prototype.toString;
+			var type = 'DOMWindow';
 
-            		Object.prototype.toString = function() {
-                		return '[object ' + type + ']';
-            		};
+			Object.prototype.toString = function() {
+				return '[object ' + type + ']';
+			};
 
-            		check(null, 'null');
-            		check(undefined, 'undefined');
+			check(null, 'null');
+			check(undefined, 'undefined');
 
-            		type = "Window";
-            		check(null, 'null');
-            		check(undefined, 'undefined');
+			type = "Window";
+			check(null, 'null');
+			check(undefined, 'undefined');
 
-            		Object.prototype.toString = originalToString;
-        	});
+			Object.prototype.toString = originalToString;
+		});
 	});
 
 	describe('hashmap.hash()', function() {
@@ -157,7 +157,7 @@ describe('hashmap', function() {
 				hashmap.set(key, value);
 				expect(hashmap.get(key)).to.equal(value);
 			}
-			
+
 			check(null);
 			check(undefined);
 			check(false);
@@ -314,7 +314,7 @@ describe('hashmap', function() {
 
 	describe('hashmap.count() and hashmap.size', function() {
 		// NOTE: count() is expected to return .size, this
-		//   will be checked only in this unit test!
+		// will be checked only in this unit test!
 		it('should return 0 when nothing was added', function() {
 			expect(hashmap.count()).to.equal(0);
 			expect(hashmap.size).to.equal(0);
@@ -449,7 +449,7 @@ describe('hashmap', function() {
 		it('should clone a hashmap when one argument', function() {
 			hashmap.set('key', 'value');
 			hashmap.set('key2', 'value2');
-			
+
 			var map = new HashMap(hashmap);
 			expect(map.count()).to.equal(2);
 			expect(map.get('key')).to.equal('value');
@@ -486,10 +486,4 @@ describe('hashmap', function() {
 			expect(map.get('key2')).to.equal('value2');
 		});
 	});
-
-	afterEach(function() {
-	});
-	
-	after(function() {
-	});
- });
+});

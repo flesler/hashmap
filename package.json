@@ -23,9 +23,10 @@
   "repository": "git://github.com/flesler/hashmap",
   "main": "./hashmap.js",
   "scripts": {
-    "test": "mocha test/ --reporter dot",
-    "precommit": "jshint hashmap.js",
-    "prepush": "npm run test"
+    "test": "mocha test/",
+    "lint": "jshint hashmap.js test/test.js",
+    "precommit": "npm run lint",
+    "prepush": "npm run test -- --reporter dot"
   },
   "engines": {
     "node": "*"
