@@ -5,7 +5,7 @@
  * Homepage: https://github.com/flesler/hashmap
  */
 
-(function(factory) {
+(function(factory, scope) {
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
 		define([], factory);
@@ -16,7 +16,7 @@
 		HashMap.HashMap = HashMap;
 	} else {
 		// Browser globals (this is window)
-		this.HashMap = factory();
+		scope.HashMap = factory();
 	}
 }(function() {
 
@@ -206,4 +206,4 @@
 	}
 
 	return HashMap;
-}));
+}, typeof window === 'object' && window.window === window && window));
