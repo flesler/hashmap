@@ -312,6 +312,33 @@ describe('hashmap', function() {
 		});
 	});
 
+	describe('ES6 Iterators', function() {
+		it('should do nothing on an empty hashmap', function() {
+			var called = false;
+			for (var pair of hashmap) { // jshint ignore:line
+				// (`pair` is not used)
+				called = true;
+			}
+			expect(called).to.be.false;
+		});
+
+		it('should iterate over all entries exactly once', function() {
+			// Since order of iteration is not guaranteed, we'll keep track of which key-value pair has been checked, and how many times.
+			var numberOfTries = 10;
+			var calls = new Array(numberOfTries).fill(0);
+			// Populate hashmap with ['keyI': I] pairs
+			for (var i = 0; i < numberOfTries; i++) {
+				hashmap.set('key' + i, i);
+			}
+			// Perform ES6 iteration
+			for (var pair of hashmap) {
+				expect(pair.key).to.equal('key' + pair.value);
+				calls[pair.value]++;
+			}
+			expect(calls).to.deep.equal(new Array(numberOfTries).fill(1));
+		});
+	});
+
 	describe('hashmap.count() and hashmap.size', function() {
 		// NOTE: count() is expected to return .size, this
 		// will be checked only in this unit test!

@@ -175,6 +175,24 @@
 
 	HashMap.uid = 0;
 
+	// Iterator protocol for ES6
+	if (typeof Symbol !== 'undefined' && typeof Symbol.iterator !== 'undefined') {
+		proto[Symbol.iterator] = function() {
+			var entries = this.entries();
+			var i = 0;
+			return {
+				next:function() {
+					if (i === entries.length) { return { done: true }; }
+					var currentEntry = entries[i++];
+					return {
+						value: { key: currentEntry[0], value: currentEntry[1] },
+						done: false
+					};
+				}
+			};
+		};
+	}
+
 	//- Add chaining to all methods that don't return something
 
 	['set','multi','copy','delete','clear','forEach'].forEach(function(method) {

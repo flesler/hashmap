@@ -139,6 +139,11 @@ map
   .forEach(function(value, key) {
       console.log(key + " : " + value);
   });
+
+// ES6 Iterators
+for (const pair of map) {
+    console.log(`${pair.key} : ${pair.value}`)
+}
 ```
 
 ## LICENSE
