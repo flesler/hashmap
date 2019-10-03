@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.0
+- HashMap instances are now compatible ES6 iterators. Thanks @NathanJang
+
 ## 2.3.0
 - Constructor now supports a 2D array 2D of key-value pair. Thanks @ulikoehler
 - Renamed `remove()` to `delete()`. `remove()` is now deprecated and kept temporarily. Thanks @ulikoehler
