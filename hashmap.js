@@ -5,223 +5,413 @@
  * Homepage: https://github.com/flesler/hashmap
  */
 
-(function(factory) {
-	if (typeof define === 'function' && define.amd) {
-		// AMD. Register as an anonymous module.
-		define([], factory);
-	} else if (typeof module === 'object') {
-		// Node js environment
-		var HashMap = module.exports = factory();
-		// Keep it backwards compatible
-		HashMap.HashMap = HashMap;
-	} else {
-		// Browser globals (this is window)
-		this.HashMap = factory();
-	}
-}(function() {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], factory);
+    } else if (typeof module === 'object') {
+        // Node js environment
+        var HashMap = module.exports = factory();
+        // Keep it backwards compatible
+        HashMap.HashMap = HashMap;
+    } else {
+        // Browser globals (this is window)
+        this.HashMap = factory();
+    }
+}(function () {
 
-	function HashMap(other) {
-		this.clear();
-		switch (arguments.length) {
-			case 0: break;
-			case 1: {
-				if ('length' in other) {
-					// Flatten 2D array to alternating key-value array
-					multi(this, Array.prototype.concat.apply([], other));
-				} else { // Assumed to be a HashMap instance
-					this.copy(other);
-				}
-				break;
-			}
-			default: multi(this, arguments); break;
-		}
-	}
+    function HashMap(other) {
+        this.clear();
+        switch (arguments.length) {
+            case 0:
+                break;
+            case 1: {
+                if ('length' in other) {
+                    // Flatten 2D array to alternating key-value array
+                    multi(this, Array.prototype.concat.apply([], other));
+                } else { // Assumed to be a HashMap instance
+                    this.copy(other);
+                }
+                break;
+            }
+            default:
+                multi(this, arguments);
+                break;
+        }
+    }
 
-	var proto = HashMap.prototype = {
-		constructor:HashMap,
+    function HashBucket(safeKey, key, value) {
+        this._safeKey = safeKey;
+        this._key = key;
+        this._value= value;
+        this._next= null;
+        this._size= 1;
+    }
+    HashBucket.prototype = {
+        constructor: HashBucket,
+        get: function (hash, key) {
+            var bucket = this;
+            // avoid recursion
+            do {
+                if (bucket._safeKey === key) {
+                    return bucket._value;
+                }
+                bucket = bucket._next;
+            }
+            while (bucket != null);
+            return null;
+        },
+        set: function (hash, safeKey, key, value) {
+            var bucket = this;
+            // avoid recursion
+            while (true) {
+                if (bucket._safeKey === safeKey) {
+                   bucket._value = value;
+                   return false;
+                }
+                if(bucket._next) {
+                    bucket = bucket._next;
+                } else {
+                    bucket._next = new HashBucket(safeKey, key, value);
+                    this._size++;
+                    return true;
+                }
+            }
+        },
 
-		get:function(key) {
-			var data = this._data[this.hash(key)];
-			return data && data[1];
-		},
+        has: function (hash, key) {
+            var bucket = this;
+            // avoid recursion
+            do {
+                if (bucket._safeKey === key) {
+                    return true;
+                }
+                bucket = bucket._next;
+            }
+            while (bucket != null);
+            return false;
+        },
 
-		set:function(key, value) {
-			// Store original key as well (for iteration)
-			var hash = this.hash(key);
-			if ( !(hash in this._data) ) {
-				this.size++;
-			}
-			this._data[hash] = [key, value];
-		},
+        search: function (value) {
+            var bucket = this;
+            // avoid recursion
+            do {
+                if (bucket._value === value) {
+                    return bucket._key;
+                }
+                bucket = bucket._next;
+            }
+            while (bucket != null);
+            return null;
+        },
 
-		multi:function() {
-			multi(this, arguments);
-		},
+        delete: function (hash, key) {
+            var bucket = this;
+            var prev = null;
+            // avoid recursion
+            do {
+                if (bucket._safeKey === key) {
+                    var next = bucket._next;
+                    if(bucket._next) {
+                        bucket._key = next._key;
+                        bucket._safeKey = next._safeKey;
+                        bucket._value = next._value;
+                        bucket._next = next._next;
+                    } else if(prev) {
+                        delete prev._next;
+                    }
+                    this._size--;
+                    return true;
+                }
+                prev = bucket;
+                bucket = bucket._next;
+            }
+            while (bucket != null);
+            return false;
+        },
 
-		copy:function(other) {
-			for (var hash in other._data) {
-				if ( !(hash in this._data) ) {
-					this.size++;
-				}
-				this._data[hash] = other._data[hash];
-			}
-		},
+        forEach: function (func, ctx) {
+            var bucket = this;
+            // avoid recursion
+            do {
+                func.call(ctx,  bucket._value, bucket._key);
+                bucket = bucket._next;
+            }
+            while (bucket != null);
+        }
+    };
 
-		has:function(key) {
-			return this.hash(key) in this._data;
-		},
+    function HashBuckets(depth) {
+        this._depth = depth || 3;
+        this._buckets= new Array(16);
+        this._size= 0;
+    }
 
-		search:function(value) {
-			for (var key in this._data) {
-				if (this._data[key][1] === value) {
-					return this._data[key][0];
-				}
-			}
+    HashBuckets.prototype = {
+        constructor: HashBuckets,
+        get: function (hash, key) {
+            var bucket = this._buckets[hash % 16];
+            if (bucket) {
+                return bucket.get(hash >> 5, key);
+            }
+            return null;
+        },
+        set: function (hash, safeKey, key, value) {
+            var idx  = hash % 16;
+            var bucket = this._buckets[idx];
+            if (bucket) {
+                return bucket.set(hash >> 5, safeKey, key, value);
+            } else {
+                if( this._depth > 0){
+                    this._buckets[idx] = new HashBucket(safeKey, key, value);
+                } else {
+                    bucket = new HashBuckets(this._depth-1);
+                    bucket.set(hash >> 5, safeKey, key, value);
+                    this._buckets[idx] = bucket;
+                }
+                this._size++;
+                return true;
+            }
+        },
 
-			return null;
-		},
+        has: function (hash, key) {
+            var bucket = this._buckets[hash % 16];
+            if(bucket) {
+                return bucket.has(hash >> 5, key);
+            }
+            return false;
+        },
+        search: function (value) {
+            for (var idx in this._buckets) {
+                var data = this._buckets[idx];
+                var key = data.search(value);
+                if(key){
+                    return key;
+                }
+            }
+            return null;
+        },
 
-		delete:function(key) {
-			var hash = this.hash(key);
-			if ( hash in this._data ) {
-				this.size--;
-				delete this._data[hash];
-			}
-		},
+        delete: function (hash,key) {
+            var idx= hash % 16;
+            var bucket = this._buckets[idx];
+            if (bucket) {
+                if(bucket.delete(hash, key)){
+                    if(bucket._size === 0){
+                        delete this._buckets[idx];
+                        this._size--;
+                    }
+                    return true;
+                }
+            }
+            return false;
+        },
 
-		type:function(key) {
-			var str = Object.prototype.toString.call(key);
-			var type = str.slice(8, -1).toLowerCase();
-			// Some browsers yield DOMWindow or Window for null and undefined, works fine on Node
-			if (!key && (type === 'domwindow' || type === 'window')) {
-				return key + '';
-			}
-			return type;
-		},
+        forEach: function (func, ctx) {
+            for (var idx in this._buckets) {
+                var data = this._buckets[idx];
+                data.forEach(func, ctx);
+            }
+        }
+    };
 
-		keys:function() {
-			var keys = [];
-			this.forEach(function(_, key) { keys.push(key); });
-			return keys;
-		},
+    var proto = HashMap.prototype = {
+        constructor: HashMap,
 
-		values:function() {
-			var values = [];
-			this.forEach(function(value) { values.push(value); });
-			return values;
-		},
+        get: function (key) {
+            var safeKey = this.safeKey(key);
+            var hash = hashCode(safeKey);
+            return this._buckets.get(hash,safeKey);
+        },
 
-		entries:function() {
-			var entries = [];
-			this.forEach(function(value, key) { entries.push([key, value]); });
-			return entries;
-		},
+        set: function (key, value) {
+            var safeKey = this.safeKey(key);
+            var hash = hashCode(safeKey);
+            // Store original key as well (for iteration)
+            if (this._buckets.set(hash,safeKey, key, value)) {
+                this.size++;
+            }
+        },
 
-		// TODO: This is deprecated and will be deleted in a future version
-		count:function() {
-			return this.size;
-		},
+        multi: function () {
+            multi(this, arguments);
+        },
 
-		clear:function() {
-			// TODO: Would Object.create(null) make any difference
-			this._data = {};
-			this.size = 0;
-		},
+        copy: function (other) {
+            var map = this;
+            other.forEach(function(value, key){
+                map.set(key,value);
+            });
+        },
 
-		clone:function() {
-			return new HashMap(this);
-		},
+        has: function (key) {
+            var safeKey = this.safeKey(key);
+            var hash = hashCode(safeKey);
+            return this._buckets.has(hash,safeKey);
+        },
 
-		hash:function(key) {
-			switch (this.type(key)) {
-				case 'undefined':
-				case 'null':
-				case 'boolean':
-				case 'number':
-				case 'regexp':
-					return key + '';
+        search: function (value) {
+            return this._buckets.search(value);
+        },
 
-				case 'date':
-					return '♣' + key.getTime();
+        delete: function (key) {
+            var safeKey = this.safeKey(key);
+            var hash = hashCode(safeKey);
+            if (this._buckets.delete(hash,safeKey)) {
+                this.size--;
+            }
+        },
 
-				case 'string':
-					return '♠' + key;
+        type: function (key) {
+            var str = Object.prototype.toString.call(key);
+            var type = str.slice(8, -1).toLowerCase();
+            // Some browsers yield DOMWindow or Window for null and undefined, works fine on Node
+            if (!key && (type === 'domwindow' || type === 'window')) {
+                return key + '';
+            }
+            return type;
+        },
 
-				case 'array':
-					var hashes = [];
-					for (var i = 0; i < key.length; i++) {
-						hashes[i] = this.hash(key[i]);
-					}
-					return '♥' + hashes.join('⁞');
+        keys: function () {
+            var keys = [];
+            this.forEach(function (_, key) {
+                keys.push(key);
+            });
+            return keys;
+        },
 
-				default:
-					// TODO: Don't use expandos when Object.defineProperty is not available?
-					if (!key.hasOwnProperty('_hmuid_')) {
-						key._hmuid_ = ++HashMap.uid;
-						hide(key, '_hmuid_');
-					}
+        values: function () {
+            var values = [];
+            this.forEach(function (value) {
+                values.push(value);
+            });
+            return values;
+        },
 
-					return '♦' + key._hmuid_;
-			}
-		},
+        entries: function () {
+            var entries = [];
+            this.forEach(function (value, key) {
+                entries.push([key, value]);
+            });
+            return entries;
+        },
 
-		forEach:function(func, ctx) {
-			for (var key in this._data) {
-				var data = this._data[key];
-				func.call(ctx || this, data[1], data[0]);
-			}
-		}
-	};
+        // TODO: This is deprecated and will be deleted in a future version
+        count: function () {
+            return this.size;
+        },
 
-	HashMap.uid = 0;
+        clear: function () {
+            // TODO: Would Object.create(null) make any difference
+            this._buckets = new HashBuckets();
+            this.size = 0;
+        },
 
-	// Iterator protocol for ES6
-	if (typeof Symbol !== 'undefined' && typeof Symbol.iterator !== 'undefined') {
-		proto[Symbol.iterator] = function() {
-			var entries = this.entries();
-			var i = 0;
-			return {
-				next:function() {
-					if (i === entries.length) { return { done: true }; }
-					var currentEntry = entries[i++];
-					return {
-						value: { key: currentEntry[0], value: currentEntry[1] },
-						done: false
-					};
-				}
-			};
-		};
-	}
+        clone: function () {
+            return new HashMap(this);
+        },
+        hash: function(key) {
+            return hashCode(this.safeKey(key));
+        },
+        safeKey: function (key) {
+            switch (this.type(key)) {
+                case 'undefined':
+                case 'null':
+                case 'boolean':
+                case 'number':
+                case 'regexp':
+                    return key + '';
 
-	//- Add chaining to all methods that don't return something
+                case 'date':
+                    return '♣' + key.getTime();
 
-	['set','multi','copy','delete','clear','forEach'].forEach(function(method) {
-		var fn = proto[method];
-		proto[method] = function() {
-			fn.apply(this, arguments);
-			return this;
-		};
-	});
+                case 'string':
+                    return '♠' + key;
 
-	//- Backwards compatibility
+                case 'array':
+                    var hashes = [];
+                    for (var i = 0; i < key.length; i++) {
+                        hashes[i] = this.hash(key[i]);
+                    }
+                    return '♥' + hashes.join('⁞');
 
-	// TODO: remove() is deprecated and will be deleted in a future version
-	HashMap.prototype.remove = HashMap.prototype.delete;
+                default:
+                    // TODO: Don't use expandos when Object.defineProperty is not available?
+                    if (!key.hasOwnProperty('_hmuid_')) {
+                        key._hmuid_ = ++HashMap.uid;
+                        hide(key, '_hmuid_');
+                    }
 
-	//- Utils
+                    return '♦' + key._hmuid_;
+            }
+        },
 
-	function multi(map, args) {
-		for (var i = 0; i < args.length; i += 2) {
-			map.set(args[i], args[i+1]);
-		}
-	}
+        forEach: function (func, ctx) {
+            this._buckets.forEach(func, ctx || this);
+        }
+    };
 
-	function hide(obj, prop) {
-		// Make non iterable if supported
-		if (Object.defineProperty) {
-			Object.defineProperty(obj, prop, {enumerable:false});
-		}
-	}
+    HashMap.uid = 0;
 
-	return HashMap;
+    // Iterator protocol for ES6
+    if (typeof Symbol !== 'undefined' && typeof Symbol.iterator !== 'undefined') {
+        proto[Symbol.iterator] = function () {
+            var entries = this.entries();
+            var i = 0;
+            return {
+                next: function () {
+                    if (i === entries.length) {
+                        return {done: true};
+                    }
+                    var currentEntry = entries[i++];
+                    return {
+                        value: {key: currentEntry[0], value: currentEntry[1]},
+                        done: false
+                    };
+                }
+            };
+        };
+    }
+
+    //- Add chaining to all methods that don't return something
+
+    ['set', 'multi', 'copy', 'delete', 'clear', 'forEach'].forEach(function (method) {
+        var fn = proto[method];
+        proto[method] = function () {
+            fn.apply(this, arguments);
+            return this;
+        };
+    });
+
+    //- Backwards compatibility
+
+    // TODO: remove() is deprecated and will be deleted in a future version
+    HashMap.prototype.remove = HashMap.prototype.delete;
+
+    //- Utils
+
+    function multi(map, args) {
+        for (var i = 0; i < args.length; i += 2) {
+            map.set(args[i], args[i + 1]);
+        }
+    }
+
+    function hashCode(str) {
+        var hash = 0, i, chr;
+        for (i = 0; i < str.length; i++) {
+            chr   = str.charCodeAt(i);
+            hash  = ((hash << 5) - hash) + chr;
+            hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
+    }
+
+    function hide(obj, prop) {
+        // Make non iterable if supported
+        if (Object.defineProperty) {
+            Object.defineProperty(obj, prop, {enumerable: false});
+        }
+    }
+
+    return HashMap;
 }));
