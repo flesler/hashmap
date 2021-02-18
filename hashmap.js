@@ -21,9 +21,9 @@
 }(function () {
 
     var _widthB = 8;
-    var _width = 2^_widthB;
+    var _width = 2 << _widthB; // 2 ^ widthB
     var _mask = _width-1;
-    var _depth = Math.floor(32/_widthB);
+    var _depth = _widthB >> 5; //divide by 32
 
     function HashMap(other) {
         this.clear();
