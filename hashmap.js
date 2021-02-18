@@ -20,6 +20,11 @@
     }
 }(function () {
 
+    var _widthB = 8;
+    var _width = 2^_widthB;
+    var _mask = _width-1;
+    var _depth = Math.floor(32/_widthB);
+
     function HashMap(other) {
         this.clear();
         switch (arguments.length) {
@@ -142,31 +147,31 @@
     };
 
     function HashBuckets(depth) {
-        this._depth = depth || 3;
-        this._buckets= new Array(16);
+        this._depth = depth || _depth;
+        this._buckets= new Array(_width);
         this._size= 0;
     }
 
     HashBuckets.prototype = {
         constructor: HashBuckets,
         get: function (hash, key) {
-            var bucket = this._buckets[hash % 16];
+            var bucket = this._buckets[hash & _mask];
             if (bucket) {
-                return bucket.get(hash >> 5, key);
+                return bucket.get(hash >> _widthB, key);
             }
             return null;
         },
         set: function (hash, safeKey, key, value) {
-            var idx  = hash % 16;
+            var idx  = hash & _mask;
             var bucket = this._buckets[idx];
             if (bucket) {
-                return bucket.set(hash >> 5, safeKey, key, value);
+                return bucket.set(hash >> _widthB, safeKey, key, value);
             } else {
                 if( this._depth > 0){
                     this._buckets[idx] = new HashBucket(safeKey, key, value);
                 } else {
                     bucket = new HashBuckets(this._depth-1);
-                    bucket.set(hash >> 5, safeKey, key, value);
+                    bucket.set(hash >> _widthB, safeKey, key, value);
                     this._buckets[idx] = bucket;
                 }
                 this._size++;
@@ -175,9 +180,9 @@
         },
 
         has: function (hash, key) {
-            var bucket = this._buckets[hash % 16];
+            var bucket = this._buckets[hash & _mask];
             if(bucket) {
-                return bucket.has(hash >> 5, key);
+                return bucket.has(hash >> _widthB, key);
             }
             return false;
         },
@@ -193,7 +198,7 @@
         },
 
         delete: function (hash,key) {
-            var idx= hash % 16;
+            var idx= hash & _mask;
             var bucket = this._buckets[idx];
             if (bucket) {
                 if(bucket.delete(hash, key)){

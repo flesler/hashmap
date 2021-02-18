@@ -11,6 +11,7 @@ describe('hashmap', function() {
 	describe('hashmap.type()', function() {
 		function check(data, type) {
 			expect(hashmap.type(data)).to.equal(type);
+
 		}
 		it('should detect types accurately', function() {
 			check(null, 'null');
@@ -469,6 +470,8 @@ describe('hashmap', function() {
 	});
 
 	describe('constructor', function() {
+		this.timeout(0);
+
 		it('should create an empty hashmap when no arguments', function() {
 			expect(hashmap.count()).to.equal(0);
 		});
