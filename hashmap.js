@@ -21,9 +21,9 @@
 }(function () {
 
     var _widthB = 8;
-    var _width = 2 << _widthB; // 2 ^ widthB
+    var _width = 1 << _widthB; // 2 ^ widthB
     var _mask = _width-1;
-    var _depth = _widthB >> 5; //divide by 32
+    var _depth = _widthB >>> 5; //divide by 32
 
     function HashMap(other) {
         this.clear();
@@ -157,7 +157,7 @@
         get: function (hash, key) {
             var bucket = this._buckets[hash & _mask];
             if (bucket) {
-                return bucket.get(hash >> _widthB, key);
+                return bucket.get(hash >>> _widthB, key);
             }
             return null;
         },
@@ -165,13 +165,13 @@
             var idx  = hash & _mask;
             var bucket = this._buckets[idx];
             if (bucket) {
-                return bucket.set(hash >> _widthB, safeKey, key, value);
+                return bucket.set(hash >>> _widthB, safeKey, key, value);
             } else {
                 if( this._depth > 0){
                     this._buckets[idx] = new HashBucket(safeKey, key, value);
                 } else {
                     bucket = new HashBuckets(this._depth-1);
-                    bucket.set(hash >> _widthB, safeKey, key, value);
+                    bucket.set(hash >>> _widthB, safeKey, key, value);
                     this._buckets[idx] = bucket;
                 }
                 this._size++;
@@ -182,7 +182,7 @@
         has: function (hash, key) {
             var bucket = this._buckets[hash & _mask];
             if(bucket) {
-                return bucket.has(hash >> _widthB, key);
+                return bucket.has(hash >>> _widthB, key);
             }
             return false;
         },
