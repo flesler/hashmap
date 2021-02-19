@@ -20,10 +20,6 @@
     }
 }(function () {
 
-    var _widthB = 8;
-    var _width = 1 << _widthB; // 2 ^ widthB
-    var _mask = _width-1;
-    var _depth = _widthB >>> 5; //divide by 32
 
     function HashMap(other) {
         this.clear();
@@ -48,10 +44,11 @@
     function HashBucket(safeKey, key, value) {
         this._safeKey = safeKey;
         this._key = key;
-        this._value= value;
-        this._next= null;
-        this._size= 1;
+        this._value = value;
+        this._next = null;
+        this._size = 1;
     }
+
     HashBucket.prototype = {
         constructor: HashBucket,
         get: function (hash, key) {
@@ -71,10 +68,10 @@
             // avoid recursion
             while (true) {
                 if (bucket._safeKey === safeKey) {
-                   bucket._value = value;
-                   return false;
+                    bucket._value = value;
+                    return false;
                 }
-                if(bucket._next) {
+                if (bucket._next) {
                     bucket = bucket._next;
                 } else {
                     bucket._next = new HashBucket(safeKey, key, value);
@@ -117,12 +114,12 @@
             do {
                 if (bucket._safeKey === key) {
                     var next = bucket._next;
-                    if(bucket._next) {
+                    if (bucket._next) {
                         bucket._key = next._key;
                         bucket._safeKey = next._safeKey;
                         bucket._value = next._value;
                         bucket._next = next._next;
-                    } else if(prev) {
+                    } else if (prev) {
                         delete prev._next;
                     }
                     this._size--;
@@ -139,40 +136,52 @@
             var bucket = this;
             // avoid recursion
             do {
-                func.call(ctx,  bucket._value, bucket._key);
+                func.call(ctx, bucket._value, bucket._key);
                 bucket = bucket._next;
             }
             while (bucket != null);
         }
     };
 
-    function HashBuckets(depth) {
-        this._depth = depth || _depth;
-        this._buckets= new Array(_width);
-        this._size= 0;
+    function HashBuckets(options, depth) {
+        this._options = options;
+        this._buckets = new Array(this._options.width);
+        this._size = 0;
+        switch (arguments.length) {
+            case 0:
+                this._depth = 0;
+                break;
+            case 1:
+                this._depth = options.depth;
+                break;
+            case 2:
+            default:
+                this._depth = depth;
+                break;
+        }
     }
 
     HashBuckets.prototype = {
         constructor: HashBuckets,
         get: function (hash, key) {
-            var bucket = this._buckets[hash & _mask];
+            var bucket = this._buckets[hash & this._options.mask];
             if (bucket) {
-                return bucket.get(hash >>> _widthB, key);
+                return bucket.get(hash >>> this._options.widthB, key);
             }
             return null;
         },
         set: function (hash, safeKey, key, value) {
-            var idx  = hash & _mask;
+            var idx = hash & this._options.mask;
             var bucket = this._buckets[idx];
             if (bucket) {
-                return bucket.set(hash >>> _widthB, safeKey, key, value);
+                return bucket.set(hash >>> this._options.widthB, safeKey, key, value);
             } else {
-                if( this._depth > 0){
-                    this._buckets[idx] = new HashBucket(safeKey, key, value);
-                } else {
-                    bucket = new HashBuckets(this._depth-1);
-                    bucket.set(hash >>> _widthB, safeKey, key, value);
+                if (this._depth > 0) {
+                    bucket = new HashBuckets(this._options, this._depth - 1);
+                    bucket.set(hash >>> this._options.widthB, safeKey, key, value);
                     this._buckets[idx] = bucket;
+                } else {
+                    this._buckets[idx] = new HashBucket(safeKey, key, value);
                 }
                 this._size++;
                 return true;
@@ -180,9 +189,9 @@
         },
 
         has: function (hash, key) {
-            var bucket = this._buckets[hash & _mask];
-            if(bucket) {
-                return bucket.has(hash >>> _widthB, key);
+            var bucket = this._buckets[hash & this._options.mask];
+            if (bucket) {
+                return bucket.has(hash >>> this._options.widthB, key);
             }
             return false;
         },
@@ -190,19 +199,19 @@
             for (var idx in this._buckets) {
                 var data = this._buckets[idx];
                 var key = data.search(value);
-                if(key){
+                if (key) {
                     return key;
                 }
             }
             return null;
         },
 
-        delete: function (hash,key) {
-            var idx= hash & _mask;
+        delete: function (hash, key) {
+            var idx = hash & this._options.mask;
             var bucket = this._buckets[idx];
             if (bucket) {
-                if(bucket.delete(hash, key)){
-                    if(bucket._size === 0){
+                if (bucket.delete(hash >>> this._options.widthB, key)) {
+                    if (bucket._size === 0) {
                         delete this._buckets[idx];
                         this._size--;
                     }
@@ -220,20 +229,21 @@
         }
     };
 
+
     var proto = HashMap.prototype = {
         constructor: HashMap,
 
         get: function (key) {
             var safeKey = this.safeKey(key);
             var hash = hashCode(safeKey);
-            return this._buckets.get(hash,safeKey);
+            return this._buckets.get(hash, safeKey);
         },
 
         set: function (key, value) {
             var safeKey = this.safeKey(key);
             var hash = hashCode(safeKey);
             // Store original key as well (for iteration)
-            if (this._buckets.set(hash,safeKey, key, value)) {
+            if (this._buckets.set(hash, safeKey, key, value)) {
                 this.size++;
             }
         },
@@ -244,15 +254,15 @@
 
         copy: function (other) {
             var map = this;
-            other.forEach(function(value, key){
-                map.set(key,value);
+            other.forEach(function (value, key) {
+                map.set(key, value);
             });
         },
 
         has: function (key) {
             var safeKey = this.safeKey(key);
             var hash = hashCode(safeKey);
-            return this._buckets.has(hash,safeKey);
+            return this._buckets.has(hash, safeKey);
         },
 
         search: function (value) {
@@ -262,7 +272,7 @@
         delete: function (key) {
             var safeKey = this.safeKey(key);
             var hash = hashCode(safeKey);
-            if (this._buckets.delete(hash,safeKey)) {
+            if (this._buckets.delete(hash, safeKey)) {
                 this.size--;
             }
         },
@@ -305,17 +315,48 @@
         count: function () {
             return this.size;
         },
+        // how many layers of hashmap do we want, and to the power of 2 how many buckets do we want.
+        setOptions: function (_depth, _widthB) {
+
+            var widthB;
+            var depth;
+            switch (arguments.length) {
+                case 0:
+                    widthB = 4; // 16 buckets
+                    depth = 4;
+                    break;
+                case 1:
+                    widthB = 4;
+                    depth = _depth;
+                    break;
+                default:
+                    widthB = _widthB;
+                    depth = _depth;
+                    break;
+            }
+            var width = 1 << widthB; // 2 ^ widthB
+            var mask = width - 1;
+            this.options = {widthB, width, mask, depth};
+        },
 
         clear: function () {
-            // TODO: Would Object.create(null) make any difference
-            this._buckets = new HashBuckets();
+            if (!this.options) {
+                this.setOptions();
+            }
+            // we clone the options as its dangerous to modify mid execution.
+            this._buckets = new HashBuckets({
+                widthB: this.options.widthB,
+                width: this.options.width,
+                mask: this.options.mask,
+                depth: this.options.depth
+            });
             this.size = 0;
         },
 
         clone: function () {
             return new HashMap(this);
         },
-        hash: function(key) {
+        hash: function (key) {
             return hashCode(this.safeKey(key));
         },
         safeKey: function (key) {
@@ -404,8 +445,8 @@
     function hashCode(str) {
         var hash = 0, i, chr;
         for (i = 0; i < str.length; i++) {
-            chr   = str.charCodeAt(i);
-            hash  = ((hash << 5) - hash) + chr;
+            chr = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + chr;
             hash |= 0; // Convert to 32bit integer
         }
         return hash;
