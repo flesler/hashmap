@@ -11,6 +11,7 @@ describe('hashmap', function() {
 	describe('hashmap.type()', function() {
 		function check(data, type) {
 			expect(hashmap.type(data)).to.equal(type);
+
 		}
 		it('should detect types accurately', function() {
 			check(null, 'null');
@@ -274,7 +275,7 @@ describe('hashmap', function() {
 		it('should work for several keys', function() {
 			hashmap.set('key', 'value');
 			hashmap.set('key2', 'value2');
-			expect(hashmap.keys()).to.deep.equal(['key', 'key2']);
+			expect(hashmap.keys().sort()).to.deep.equal(['key', 'key2']);
 		});
 	});
 
@@ -291,7 +292,7 @@ describe('hashmap', function() {
 		it('should work for several values', function() {
 			hashmap.set('key', 'value');
 			hashmap.set('key2', 'value2');
-			expect(hashmap.values()).to.deep.equal(['value', 'value2']);
+			expect(hashmap.values().sort()).to.deep.equal(['value', 'value2']);
 		});
 	});
 
@@ -308,7 +309,7 @@ describe('hashmap', function() {
 		it('should work for several values', function() {
 			hashmap.set('key', 'value');
 			hashmap.set('key2', 'value2');
-			expect(hashmap.entries()).to.deep.equal([['key','value'], ['key2','value2']]);
+			expect(hashmap.entries().sort()).to.deep.equal([['key','value'], ['key2','value2']]);
 		});
 	});
 
@@ -469,6 +470,8 @@ describe('hashmap', function() {
 	});
 
 	describe('constructor', function() {
+		this.timeout(0);
+
 		it('should create an empty hashmap when no arguments', function() {
 			expect(hashmap.count()).to.equal(0);
 		});

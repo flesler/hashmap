@@ -3,3 +3,4 @@
 --sort
 --recursive
 --inline-diffs
+--timeout 0

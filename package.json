@@ -23,7 +23,9 @@
   "repository": "git://github.com/flesler/hashmap",
   "main": "./hashmap.js",
   "scripts": {
-    "test": "mocha test/",
+    "test": "mocha test/test.js",
+    "alltest": "mocha test/",
+    "benchmark": "node test/benchmark.js",
     "lint": "jshint hashmap.js test/test.js",
     "precommit": "npm run lint",
     "prepush": "npm run test -- --reporter dot"
@@ -31,11 +33,14 @@
   "engines": {
     "node": "*"
   },
-  "dependencies": {},
+  "dependencies": {
+    "benchmark": "^2.1.4",
+    "microtime": "^3.0.0"
+  },
   "devDependencies": {
     "chai": "4.1.1",
     "husky": "0.14.3",
-    "jshint": "2.9.5",
-    "mocha": "3.5.0"
+    "jshint": "^2.12.0",
+    "mocha": "^8.3.0"
   }
 }
