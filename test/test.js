@@ -50,48 +50,48 @@ describe('hashmap', function() {
 		});
 	});
 
-	// describe('hashmap.hash()', function() {
-	// 	function check(data, hash) {
-	// 		expect(hashmap.hash(data)).to.equal(hash);
-	// 	}
-	//
-	// 	it('should hash primitives accurately', function() {
-	// 		check(null, 'null');
-	// 		check(undefined, 'undefined');
-	// 		check(true, 'true');
-	// 		check(false, 'false');
-	// 		check(NaN, 'NaN');
-	// 		check(1, '1');
-	// 		check(1.1, '1.1');
-	// 		check('1.1', '♠1.1');
-	// 		check('Test', '♠Test');
-	// 	});
-	//
-	// 	it('should hash objects with primitive representation accurately', function() {
-	// 		check(/test/, '/test/');
-	// 		check(new Date(Date.parse('Fri, 15 Aug 1986 15:05:00 GMT')), '♣524502300000');
-	// 	});
-	//
-	// 	it('should hash arrays accurately', function() {
-	// 		check([], '♥');
-	// 		check([1, 2, 3], '♥1⁞2⁞3');
-	// 	});
-	//
-	// 	it('should hash unrecognized objects accurately', function() {
-	// 		check({}, '♦1');
-	// 		check(HashMap, '♦2');
-	// 		check(hashmap, '♦3');
-	// 	});
-	//
-	// 	it('should not add any iterable property to objects', function() {
-	// 		var obj = {};
-	// 		hashmap.hash(obj);
-	// 		expect(obj).to.be.empty;
-	// 	});
-	//
-	// 	// TODO: expect two hashmaps to hash the same object to the same value
-	// 	// TODO: test hash(1) !== hash('1')
-	// });
+	describe('hashmap.hash()', function() {
+		function check(data, hash) {
+			expect(hashmap.hash(data)).to.equal(hash);
+		}
+
+		it('should hash primitives accurately', function() {
+			check(null, 'null');
+			check(undefined, 'undefined');
+			check(true, 'true');
+			check(false, 'false');
+			check(NaN, 'NaN');
+			check(1, '1');
+			check(1.1, '1.1');
+			check('1.1', '♠1.1');
+			check('Test', '♠Test');
+		});
+
+		it('should hash objects with primitive representation accurately', function() {
+			check(/test/, '/test/');
+			check(new Date(Date.parse('Fri, 15 Aug 1986 15:05:00 GMT')), '♣524502300000');
+		});
+
+		it('should hash arrays accurately', function() {
+			check([], '♥');
+			check([1, 2, 3], '♥1⁞2⁞3');
+		});
+
+		it('should hash unrecognized objects accurately', function() {
+			check({}, '♦1');
+			check(HashMap, '♦2');
+			check(hashmap, '♦3');
+		});
+
+		it('should not add any iterable property to objects', function() {
+			var obj = {};
+			hashmap.hash(obj);
+			expect(obj).to.be.empty;
+		});
+
+		// TODO: expect two hashmaps to hash the same object to the same value
+		// TODO: test hash(1) !== hash('1')
+	});
 
 	describe('method chaining', function() {
 		it('should return the instance on some methods', function() {

@@ -1,77 +1,168 @@
-/*jshint -W030,-W121 */
-var HashMapNew = require('../hashmap');
-var HashMapOld = require('../HashMap2.4.0/hashmap');
-var Benchmark = require('benchmark');
 
-for(var loop = 0; loop < 2 ; loop++) {
-    var HashMap;
-    var suite;
-    if(loop === 1){
-        console.log("New");
-         HashMap = HashMapNew.HashMap;
-        suite = new Benchmark.Suite("hashmap new");
-    } else {
-        console.log("Old");
-         HashMap = HashMapOld.HashMap;
-        suite = new Benchmark.Suite("hashmap old");
-    }
-    var hashmap = new HashMap();
+const Benchmark = require('benchmark');
+const hashmapImplementations = {'2.4.0': '../HashMap2.4.0/hashmap', '3.0.0': '../hashmap'};
+const array = require('lodash/array');
+
+let theSuite = new Benchmark.Suite('hashmap benchmarks');
+
+Object.entries(hashmapImplementations)
+    .forEach(([version, location]) => benchmarkHashMapImplementation(version, location));
+
+
+theSuite = theSuite.on('cycle', function (event) {
+    console.log(String(event.target));
+}).on('complete', function () {
+    array.uniq(this.filter('name').map('name'))
+        .forEach((name) => {
+                const fastest = Benchmark.filter(this.filter({'name': name}), 'fastest')[0];
+                const slowest = Benchmark.filter(this.filter({'name': name}), 'slowest')[0];
+                const fastestVersion = fastest.version;
+                const difference = ((fastest.hz - slowest.hz) / slowest.hz);
+                const percentageDifference = difference * 100;
+                console.log( fastestVersion, 'is', (difference + 1).toFixed(2), 'X faster on', name , 'an increase of',
+                    percentageDifference.toFixed(2) + '%');
+            }
+        );
+}).on('onError', function (err) {
+    console.log("Error", err);
+});
+const RUN_AMOUNTS = 1;
+for(let k = 0; k < RUN_AMOUNTS; k++){
+    console.info("Iteration",k);
+    theSuite.run();
+}
+
+function benchmarkHashMapImplementation(version, location) {
+    console.info("Benchmarking:", version, "from:", location);
+    const HashMap = require(location).HashMap;
+
+    let hashmap = new HashMap();
     console.log("setup constants");
-    var key = makeid(16);
-    var value = makeid(128);
+    let key = makeid(16);
+    let value = makeid(128);
 
     console.log("1'024 hashmap");
-    var hashmap1024 = new HashMap();
+    let hashmap1024 = new HashMap();
 
-    for (var i = 0; i < 1024; i++) {
+    for (let i = 0; i < 1024; i++) {
         hashmap1024.set(makeid(16), makeid(128));
     }
-// console.log("262'144 hashmap");
-// var hashmap262144 = new HashMap();
-// for (var i = 0; i < 262144; i++) {
-//     hashmap262144.set(makeid(16), makeid(128));
-// }
+    console.log("131'072 hashmap");
+    var hashmap131072 = new HashMap();
+    for (var i = 0; i < 131072; i++) {
+        hashmap131072.set(makeid(16), makeid(128));
+    }
     console.log("define benchmarks");
-    suite.add("create", function () {
-        hashmap = new HashMap();
-    })
-        .add("singleSet", function () {
+    theSuite = theSuite
+        .add("_create_", function () {
+            new HashMap();
+        }, {
+            'version': version,
+            'onStart': function () {
+                console.info("=============");
+                console.info("Testing", version);
+                console.info("=============");
+            }
+        })
+        .add("_singleSet_", function () {
             hashmap.set(key, value);
-        },{'onCycle': function () {
+        }, {
+            'onCycle': function () {
                 key = makeid(16);
                 value = makeid(128);
                 hashmap.clear();
-            }})
-        .add("singleReplace", function () {
+            },
+            'version': version
+        })
+        .add("_singleSet 20_", function () {
+            for (let k = 0; k < 20; k++) {
+                hashmap.set(key[k], value[k]);
+            }
+        }, {
+            'onCycle': function () {
+                hashmap.clear(key);
+
+                key = [];
+                value = [];
+                for (let k = 0; k < 20; k++) {
+                    key.push(makeid(16));
+                    value.push(makeid(128));
+                }
+            },
+            'version': version
+        })
+        .add("_singleReplace_", function () {
             hashmap.set(key, value);
-        },{'onCycle': function () {
+        }, {
+            'onCycle': function () {
                 key = makeid(16);
                 value = makeid(128);
                 hashmap.clear();
                 hashmap.set(key, makeid(128));
-            }})
-        .add("setAfter 1,024", function () {
+            },
+            'version': version
+        })
+        .add("_setAfter 1,024_", function () {
             hashmap1024.set(key, value);
-        },{'onCycle': function () {
+        }, {
+            'onCycle': function () {
                 hashmap1024.delete(key);
                 key = makeid(16);
                 value = makeid(128);
-            }})
-        // .add("setAfter 262,144", function () {
-        //     hashmap262144.set(key, value);
-        // },{'onCycle': function () {
-        //         hashmap262144.delete(key);
-        //     key = makeid(16);
-        //     value = makeid(128);
-        // }})
-        .on('cycle', function(event) {
-            console.log(String(event.target));
-        }).on('complete', function () {
-        console.log('Fastest is ' + this.filter('fastest').map('name'));
-        console.log('Slowest is ' + this.filter('slowest').map('name'));
-    }).on('onError', function(err) {
-        console.log("Error",err);
-    }).run();
+            },
+            'version': version
+        })
+        .add("_set 20 After 1,024_", function () {
+            for (let k = 0; k < 20; k++) {
+                hashmap1024.set(key[k], value[k]);
+            }
+        }, {
+            'onCycle': function () {
+                if (key && key.length) {
+                    for (let k = 0; k < 20; k++) {
+                        hashmap1024.delete(key[k]);
+                    }
+                }
+                key = [];
+                value = [];
+                for (let k = 0; k < 20; k++) {
+                    key.push(makeid(16));
+                    value.push(makeid(128));
+                }
+            },
+            'version': version
+        })
+        .add("_setAfter 131'072_", function () {
+            hashmap131072.set(key, value);
+        }, {
+            'onCycle': function () {
+                hashmap131072.delete(key);
+                key = makeid(16);
+                value = makeid(128);
+            },
+            'version': version
+        })
+        .add("_set 20 After 131'072_", function () {
+            for (let k = 0; k < 20; k++) {
+                hashmap131072.set(key[k], value[k]);
+            }
+        }, {
+            'onCycle': function () {
+                if (key && key.length) {
+                    for (let k = 0; k < 20; k++) {
+                        hashmap131072.delete(key[k]);
+                    }
+                }
+
+                key = [];
+                value = [];
+                for (let k = 0; k < 20; k++) {
+                    key.push(makeid(16));
+                    value.push(makeid(128));
+                }
+            },
+            'version': version
+        });
 
 }
 

@@ -1,5 +1,3 @@
-Will turn this into an actual hashmap, do not use as a hashmap!
-
 # HashMap Class for JavaScript
 
 ## Installation
