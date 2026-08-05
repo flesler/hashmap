@@ -34,7 +34,7 @@ describe('hashmap', () => {
       const originalToString = Object.prototype.toString
       let type = 'DOMWindow'
 
-      Object.prototype.toString = function() {
+      Object.prototype.toString = function () {
         return '[object ' + type + ']'
       }
 
@@ -108,7 +108,7 @@ describe('hashmap', () => {
       expect(hashmap.remove('key')).toBe(hashmap)
       expect(hashmap.copy(hashmap)).toBe(hashmap)
       expect(hashmap.clear()).toBe(hashmap)
-      expect(hashmap.forEach(function(){})).toBe(hashmap)
+      expect(hashmap.forEach(function () {})).toBe(hashmap)
     })
   })
 
@@ -163,7 +163,9 @@ describe('hashmap', () => {
 
   describe('hashmap.get()', () => {
     let uid = 1
-    function val() { return 'value' + uid++ }
+    function val() {
+      return 'value' + uid++
+    }
 
     it('should map the same key consistenly to the same hash', () => {
       function check(key: unknown) {
@@ -238,7 +240,7 @@ describe('hashmap', () => {
     it('should pass the basic test', () => {
       hashmap.set('key', 'value')
       let called = 0
-      hashmap.forEach(function(value, key) {
+      hashmap.forEach(function (this: HashMap, value, key) {
         called++
         expect(value).toBe('value')
         expect(key).toBe('key')
@@ -269,7 +271,7 @@ describe('hashmap', () => {
     it('should respect forEach context', () => {
       hashmap.set('key', 'value')
       const ctx = {}
-      hashmap.forEach(function(value, key) {
+      hashmap.forEach(function (this: typeof ctx, _value, _key) {
         expect(this).toBe(ctx)
       }, ctx)
     })
@@ -328,11 +330,8 @@ describe('hashmap', () => {
 
   describe('ES6 Iterators', () => {
     it('should do nothing on an empty hashmap', () => {
-      let called = false
-      for (const pair of hashmap) {
-        called = true
-      }
-      expect(called).toBe(false)
+      const iter = hashmap[Symbol.iterator]()
+      expect(iter.next().done).toBe(true)
     })
 
     it('should iterate over all entries exactly once', () => {
@@ -468,7 +467,7 @@ describe('hashmap', () => {
     it('should work with several pairs', () => {
       hashmap.multi(
         'key', 'value',
-        'key2', 'value2'
+        'key2', 'value2',
       )
       expect(hashmap.count()).toBe(2)
       expect(hashmap.get('key')).toBe('value')
@@ -494,7 +493,7 @@ describe('hashmap', () => {
     it('should initialize from a 2D array for a single Array argument', () => {
       const map = new HashMap(
         [['key', 'value'],
-          ['key2', 'value2']]
+          ['key2', 'value2']],
       )
       expect(map.count()).toBe(2)
       expect(map.get('key')).toBe('value')
@@ -504,7 +503,7 @@ describe('hashmap', () => {
     it('should initialize from a 2D array for a nested Array argument', () => {
       const map = new HashMap(
         [[[1, 'key'], ['value', 1]],
-          [[2, 'key2'], ['value2', 2]]]
+          [[2, 'key2'], ['value2', 2]]],
       )
       expect(map.count()).toBe(2)
       expect(map.get([1, 'key'])).toEqual(['value', 1])
@@ -514,7 +513,7 @@ describe('hashmap', () => {
     it('should initialize with pairs when several arguments', () => {
       const map = new HashMap(
         'key', 'value',
-        'key2', 'value2'
+        'key2', 'value2',
       )
       expect(map.count()).toBe(2)
       expect(map.get('key')).toBe('value')

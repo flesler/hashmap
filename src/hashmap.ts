@@ -7,6 +7,7 @@ type HashMapInit =
 
 export class HashMap {
   static uid = 0
+  static HashMap: typeof HashMap
 
   size = 0
   private _data: Record<string, Entry> = {}
@@ -86,9 +87,7 @@ export class HashMap {
     return this
   }
 
-  remove(key: unknown): this {
-    return this.delete(key)
-  }
+  declare remove: (key: unknown) => this
 
   type(key: unknown): string {
     const str = Object.prototype.toString.call(key)
@@ -101,19 +100,25 @@ export class HashMap {
 
   keys(): unknown[] {
     const keys: unknown[] = []
-    this.forEach((_, key) => { keys.push(key) })
+    this.forEach((_, key) => {
+      keys.push(key)
+    })
     return keys
   }
 
   values(): unknown[] {
     const values: unknown[] = []
-    this.forEach((value) => { values.push(value) })
+    this.forEach((value) => {
+      values.push(value)
+    })
     return values
   }
 
   entries(): unknown[][] {
     const entries: unknown[][] = []
-    this.forEach((value, key) => { entries.push([key, value]) })
+    this.forEach((value, key) => {
+      entries.push([key, value])
+    })
     return entries
   }
 
@@ -202,3 +207,5 @@ function hide(obj: object, prop: string) {
     Object.defineProperty(obj, prop, { enumerable: false })
   }
 }
+
+HashMap.prototype.remove = HashMap.prototype.delete

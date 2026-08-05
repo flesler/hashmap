@@ -1,9 +1,5 @@
 import { HashMap } from './hashmap.js'
 
-type HashMapExport = typeof HashMap & { HashMap: typeof HashMap }
+HashMap.HashMap = HashMap
 
-const exported = HashMap as HashMapExport
-exported.HashMap = HashMap
-
-export { HashMap }
-export default exported
+export default HashMap

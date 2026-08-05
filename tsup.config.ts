@@ -12,8 +12,12 @@ export default defineConfig({
   splitting: false,
   treeshake: true,
   outExtension({ format }) {
-    return {
-      js: format === 'cjs' ? '.cjs' : '.js',
+    if (format === 'cjs') {
+      return { js: '.cjs' }
     }
+    if (format === 'iife') {
+      return { js: '.iife.js' }
+    }
+    return { js: '.js' }
   },
 })

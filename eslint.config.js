@@ -12,7 +12,7 @@ export default [
   stylistic.configs.recommended,
 
   {
-    files: ['src/**/*.ts', 'bin/**/*.ts', 'tsup.config.ts', 'vitest.config.ts'],
+    files: ['src/**/*.ts', 'bin/**/*.ts', '*.ts'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
