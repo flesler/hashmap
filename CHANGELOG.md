@@ -1,5 +1,20 @@
 # Changelog
 
+## 3.0.0
+
+### Breaking changes
+- TypeScript source, published from `dist/` (ESM + CJS + IIFE + types)
+- Removed deprecated `count()`, `remove()`, `hash()`, and `type()`
+- Dropped bower support
+- Minimum Node.js 20
+
+### Performance
+- Numeric internal hashing with flat entry storage
+- Faster mutations, iteration, and lookups vs 2.4.0 (see `npm run benchmark`)
+
+### Tooling
+- Vitest, ESLint 9, tsup, GitHub Actions CI
+
 ## 2.4.0
 - HashMap instances are now compatible ES6 iterators. Thanks @NathanJang
 

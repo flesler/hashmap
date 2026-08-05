@@ -8,17 +8,15 @@ Using [npm](https://npmjs.org/package/hashmap):
 
     $ npm install hashmap
 
-Using bower:
-
-    $ bower install hashmap
-
 You can download the last stable version from the [releases page](https://github.com/flesler/hashmap/releases).
-
-If you like risk, you can download the [latest master version](https://raw.github.com/flesler/hashmap/master/hashmap.js), it's usually stable.
 
 To run the tests:
 
     $ npm test
+
+To build:
+
+    $ npm run build
 
 ## Description
 
@@ -42,16 +40,12 @@ Unlike regular objects, __keys will not be stringified__. For example numbers an
 - `has(key:*) : Boolean` returns whether a key is set on the hashmap
 - `search(value:*) : *` returns key under which given value is stored (`null` if not found)
 - `delete(key:*) : HashMap` deletes a key-value pair by key
-- `remove(key:*) : HashMap` Alias for `delete(key:*)` *(deprecated)*
-- `type(key:*) : String` returns the data type of the provided key (used internally)
 - `keys() : Array<*>` returns an array with all the registered keys
 - `values() : Array<*>` returns an array with all the values
 - `entries() : Array<[*,*]>` returns an array with [key,value] pairs
 - `size : Number` the amount of key-value pairs
-- `count() : Number` returns the amount of key-value pairs *(deprecated)*
 - `clear() : HashMap` deletes all the key-value pairs on the hashmap
 - `clone() : HashMap` creates a new hashmap with all the key-value pairs of the original
-- `hash(key:*) : String` returns the stringified version of a key (used internally)
 - `forEach(function(value, key)) : HashMap` iterates the pairs and calls the function for each one
 
 ### Method chaining
@@ -69,7 +63,9 @@ var map = new HashMap();
 If you're using this within Node, you first need to import the class
 
 ```js
-var HashMap = require('hashmap');
+import HashMap from 'hashmap'
+// or
+const HashMap = require('hashmap')
 ```
 
 ### Basic use case
