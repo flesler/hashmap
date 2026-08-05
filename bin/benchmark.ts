@@ -8,7 +8,7 @@ import pkg from '../package.json' with { type: 'json' }
 const require = createRequire(import.meta.url)
 const { HashMap } = require('../dist/hashmap.cjs')
 
-const outputPath = './tmp/benchmark.json'
+let outputPath = './tmp/benchmark.json'
 let comparePath: string | null = null
 const args = process.argv.slice(2)
 
