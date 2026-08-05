@@ -88,8 +88,16 @@ describe('hashmap', function() {
 			expect(obj).to.be.empty;
 		});
 
-		// TODO: expect two hashmaps to hash the same object to the same value
-		// TODO: test hash(1) !== hash('1')
+		it('should hash the same object to the same value across instances', function() {
+			var obj = {};
+			var other = new HashMap();
+			hashmap.hash(obj);
+			expect(other.hash(obj)).to.equal(hashmap.hash(obj));
+		});
+
+		it('should distinguish number and string keys', function() {
+			expect(hashmap.hash(1)).not.to.equal(hashmap.hash('1'));
+		});
 	});
 
 	describe('method chaining', function() {
@@ -114,7 +122,13 @@ describe('hashmap', function() {
 			expect(hashmap.has('key')).to.be.true;
 		});
 
-		// TODO: Check other types?
+		it('should work with non-string keys', function() {
+			var keys = [1, null, undefined, false, NaN, /re/, [], {}];
+			keys.forEach(function(key) {
+				hashmap.set(key, 'value');
+				expect(hashmap.has(key)).to.be.true;
+			});
+		});
 	});
 
 	describe('hashmap.search()', function() {
