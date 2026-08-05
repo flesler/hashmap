@@ -8,11 +8,14 @@ var HashMap = require('../hashmap').HashMap;
 var pkg = require('../package.json');
 
 var outputPath = './tmp/benchmark.json';
+var comparePath = null;
 var args = process.argv.slice(2);
 
 for (var i = 0; i < args.length; i++) {
 	if (args[i] === '-o' && args[i + 1]) {
 		outputPath = args[++i];
+	} else if (args[i] === '--compare' && args[i + 1]) {
+		comparePath = args[++i];
 	}
 }
 
@@ -264,6 +267,64 @@ function runBenchmarks() {
 	return results;
 }
 
+function formatOps(ops) {
+	if (ops >= 1e6) {
+		return (ops / 1e6).toFixed(1) + 'M';
+	}
+	if (ops >= 1e3) {
+		return (ops / 1e3).toFixed(0) + 'K';
+	}
+	return ops.toFixed(0);
+}
+
+function loadReport(filePath) {
+	return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function printComparison(current, baseline, baselinePath) {
+	var names = Object.keys(current.benchmarks);
+	var rows = [];
+	var wins = 0;
+	var losses = 0;
+
+	names.forEach(function(name) {
+		var cur = current.benchmarks[name];
+		var base = baseline.benchmarks[name];
+		if (!base) {
+			return;
+		}
+		var ratio = cur.opsPerSec / base.opsPerSec;
+		if (ratio >= 1) {
+			wins++;
+		} else {
+			losses++;
+		}
+		rows.push({
+			name: name,
+			baseOps: base.opsPerSec,
+			curOps: cur.opsPerSec,
+			ratio: ratio
+		});
+	});
+
+	var baseLabel = baseline.version + ' @ ' + path.basename(baselinePath);
+	var curLabel = current.version + ' (now)';
+
+	console.log('');
+	console.log('compare ' + baseLabel + ' → ' + curLabel);
+	console.log('name                 base    current   ratio');
+	rows.forEach(function(row) {
+		var arrow = row.ratio >= 1 ? '↑' : '↓';
+		console.log(
+			row.name.padEnd(20) +
+			formatOps(row.baseOps).padStart(7) +
+			formatOps(row.curOps).padStart(9) +
+			(row.ratio.toFixed(2) + '×' + arrow).padStart(9)
+		);
+	});
+	console.log('summary: ' + wins + ' faster, ' + losses + ' slower');
+}
+
 var benchmarks = runBenchmarks();
 var report = {
 	version: pkg.version,
@@ -290,3 +351,7 @@ Object.keys(report.benchmarks).forEach(function(name) {
 	var bench = report.benchmarks[name];
 	console.log(name + ': ' + bench.opsPerSec.toFixed(0) + ' ops/sec');
 });
+
+if (comparePath) {
+	printComparison(report, loadReport(comparePath), comparePath);
+}
