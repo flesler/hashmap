@@ -308,10 +308,10 @@ function printComparison(current: { version: string, benchmarks: Record<string, 
   for (const row of rows) {
     const arrow = row.ratio >= 1 ? '↑' : '↓'
     console.log(
-      row.name.padEnd(20) +
-      formatOps(row.baseOps).padStart(7) +
-      formatOps(row.curOps).padStart(9) +
-      (row.ratio.toFixed(2) + '×' + arrow).padStart(9),
+      row.name.padEnd(20)
+      + formatOps(row.baseOps).padStart(7)
+      + formatOps(row.curOps).padStart(9)
+      + (row.ratio.toFixed(2) + '×' + arrow).padStart(9),
     )
   }
   console.log('summary: ' + wins + ' faster, ' + losses + ' slower')

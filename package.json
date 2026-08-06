@@ -38,10 +38,12 @@
   "scripts": {
     "build": "tsup",
     "test": "npm run test:types && npm run test:unit",
-    "test:types": "tsc -p tsconfig.test.json --noEmit",
+    "test:types:test": "tsc -p tsconfig.test.json --noEmit",
+    "test:types:bin": "tsc -p bin/tsconfig.json --noEmit",
+    "test:types": "npm run test:types:test && npm run test:types:bin",
     "test:unit": "vitest run",
     "test:watch": "vitest --watch",
-    "lint": "eslint --cache --cache-strategy content 'src/**/*.ts' '*.ts'",
+    "lint": "eslint --cache --cache-strategy content '{src,bin}/**/*.ts' '*.ts'",
     "lint:fix": "npm run lint -- --fix",
     "benchmark": "npm run build && tsx bin/benchmark.ts",
     "prepublishOnly": "npm run build"
