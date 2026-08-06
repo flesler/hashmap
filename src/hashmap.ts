@@ -1,4 +1,4 @@
-type Entry = { key: unknown, value: unknown, index: number }
+type Entry = { key: unknown, value: unknown, index: number, hash: number }
 
 type HashMapInit =
   | HashMap
@@ -27,8 +27,8 @@ class HashMap {
         break
       case 1: {
         const first = args[0]
-        if (first && typeof first === 'object' && 'length' in first && Array.isArray(first)) {
-          multi(this, Array.prototype.concat.apply([], first as unknown[][]))
+        if (first && Array.isArray(first)) {
+          multi(this, (first as unknown[][]).flat())
         } else {
           this.copy(first as HashMap)
         }
@@ -56,7 +56,7 @@ class HashMap {
       }
     }
 
-    const entry: Entry = { key, value, index: this._entries.length }
+    const entry: Entry = { key, value, index: this._entries.length, hash }
     if (slot) {
       if (Array.isArray(slot)) {
         slot.push(entry)
@@ -92,13 +92,13 @@ class HashMap {
 
     for (let i = 0; i < len; i++) {
       const source = otherEntries[i]
-      const hash = fastHash(source.key)
+      const hash = source.hash
       const slot = this._index.get(hash)
       const existing = slot ? findEntry(slot, source.key) : undefined
       if (existing) {
         existing.value = source.value
       } else {
-        const entry: Entry = { key: source.key, value: source.value, index: this._entries.length }
+        const entry: Entry = { key: source.key, value: source.value, index: this._entries.length, hash }
         if (slot) {
           if (Array.isArray(slot)) {
             slot.push(entry)
@@ -175,27 +175,31 @@ class HashMap {
   }
 
   keys(): unknown[] {
-    const keys: unknown[] = []
-    this.forEach((_, key) => {
-      keys.push(key)
-    })
-    return keys
+    const entries = this._entries
+    const out = new Array(entries.length)
+    for (let i = 0; i < entries.length; i++) {
+      out[i] = entries[i].key
+    }
+    return out
   }
 
   values(): unknown[] {
-    const values: unknown[] = []
-    this.forEach((value) => {
-      values.push(value)
-    })
-    return values
+    const entries = this._entries
+    const out = new Array(entries.length)
+    for (let i = 0; i < entries.length; i++) {
+      out[i] = entries[i].value
+    }
+    return out
   }
 
   entries(): unknown[][] {
-    const entries: unknown[][] = []
-    this.forEach((value, key) => {
-      entries.push([key, value])
-    })
-    return entries
+    const entries = this._entries
+    const out = new Array(entries.length)
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i]
+      out[i] = [entry.key, entry.value]
+    }
+    return out
   }
 
   clear(): this {
@@ -252,6 +256,7 @@ function cloneEntries(entries: Entry[]): Entry[] {
     key: entry.key,
     value: entry.value,
     index,
+    hash: entry.hash,
   }))
 }
 
@@ -259,7 +264,7 @@ function rebuildIndex(entries: Entry[]): Map<number, Slot> {
   const index = new Map<number, Slot>()
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i]
-    const hash = fastHash(entry.key)
+    const hash = entry.hash
     const slot = index.get(hash)
     if (slot) {
       if (Array.isArray(slot)) {
@@ -275,6 +280,25 @@ function rebuildIndex(entries: Entry[]): Map<number, Slot> {
 }
 
 function typeOf(key: unknown): string {
+  const t = typeof key
+  if (t === 'number' || t === 'string' || t === 'boolean' || t === 'undefined') {
+    return t
+  }
+  if (key === null) {
+    return 'null'
+  }
+  if (t === 'function') {
+    return 'function'
+  }
+  if (Array.isArray(key)) {
+    return 'array'
+  }
+  if (key instanceof Date) {
+    return 'date'
+  }
+  if (key instanceof RegExp) {
+    return 'regexp'
+  }
   const str = Object.prototype.toString.call(key)
   let typeName = str.slice(8, -1).toLowerCase()
   if (!key && (typeName === 'domwindow' || typeName === 'window')) {
@@ -308,35 +332,54 @@ function mixHash(h: number, n: number): number {
   return Math.imul(h ^ n, 2654435761) >>> 0
 }
 
-function fastHash(key: unknown): number {
-  switch (typeOf(key)) {
-    case 'undefined':
-      return 0x7f1a0001
-    case 'null':
-      return 0x7f1a0002
-    case 'boolean':
-      return key ? 0x7f1a0003 : 0x7f1a0004
-    case 'number':
-      return mixHash(0x7f1a0005, hashString((key as number) + ''))
-    case 'regexp':
-      return mixHash(0x7f1a0006, hashString((key as RegExp) + ''))
-    case 'date': {
-      const time = (key as Date).getTime()
-      return mixHash(mixHash(0x7f1a0007, time | 0), time / 0x100000000 | 0)
-    }
-    case 'string':
-      return mixHash(0x7f1a0008, hashString(key as string))
-    case 'array': {
-      const arr = key as unknown[]
-      let h = 0x7f1a0009
-      for (let i = 0; i < arr.length; i++) {
-        h = mixHash(h, fastHash(arr[i]))
-      }
-      return h
-    }
-    default:
-      return mixHash(0x7f1a000a, objectUid(key))
+const numBuf = new ArrayBuffer(8)
+const numFloat = new Float64Array(numBuf)
+const numInts = new Uint32Array(numBuf)
+
+function hashNumber(n: number): number {
+  if (n !== n) {
+    return 0x7f1a00ff
   }
+  numFloat[0] = n === 0 ? 0 : n
+  return mixHash(mixHash(0x7f1a0005, numInts[0]), numInts[1])
+}
+
+function fastHash(key: unknown): number {
+  const t = typeof key
+  if (t === 'string') {
+    return mixHash(0x7f1a0008, hashString(key as string))
+  }
+  if (t === 'number') {
+    return hashNumber(key as number)
+  }
+  if (t === 'boolean') {
+    return key ? 0x7f1a0003 : 0x7f1a0004
+  }
+  if (t === 'undefined') {
+    return 0x7f1a0001
+  }
+  if (key === null) {
+    return 0x7f1a0002
+  }
+  if (t === 'function') {
+    return mixHash(0x7f1a000a, objectUid(key))
+  }
+  if (Array.isArray(key)) {
+    const arr = key as unknown[]
+    let h = 0x7f1a0009
+    for (let i = 0; i < arr.length; i++) {
+      h = mixHash(h, fastHash(arr[i]))
+    }
+    return h
+  }
+  if (key instanceof Date) {
+    const time = (key as Date).getTime()
+    return mixHash(mixHash(0x7f1a0007, time | 0), time / 0x100000000 | 0)
+  }
+  if (key instanceof RegExp) {
+    return mixHash(0x7f1a0006, hashString((key as RegExp) + ''))
+  }
+  return mixHash(0x7f1a000a, objectUid(key))
 }
 
 function keyEquals(a: unknown, b: unknown): boolean {
@@ -344,44 +387,56 @@ function keyEquals(a: unknown, b: unknown): boolean {
     return true
   }
 
-  const ta = typeOf(a)
-  const tb = typeOf(b)
+  const ta = typeof a
+  const tb = typeof b
+
+  if (ta === 'string' && tb === 'string') {
+    return false
+  }
+  if (ta === 'number' && tb === 'number') {
+    return Number.isNaN(a as number) && Number.isNaN(b as number)
+  }
+  if (ta === 'boolean' && tb === 'boolean') {
+    return false
+  }
+  if (ta === 'undefined' && tb === 'undefined') {
+    return false
+  }
+
+  if (a === null || b === null) {
+    return false
+  }
+
   if (ta !== tb) {
     return false
   }
 
-  switch (ta) {
-    case 'undefined':
-    case 'null':
-    case 'boolean':
-      return a === b
-    case 'number':
-      if (Number.isNaN(a as number) && Number.isNaN(b as number)) {
-        return true
-      }
-      return a === b
-    case 'regexp':
-      return (a as RegExp) + '' === (b as RegExp) + ''
-    case 'date':
-      return (a as Date).getTime() === (b as Date).getTime()
-    case 'string':
-      return a === b
-    case 'array': {
-      const aa = a as unknown[]
-      const bb = b as unknown[]
-      if (aa.length !== bb.length) {
+  if (Array.isArray(a)) {
+    if (!Array.isArray(b)) {
+      return false
+    }
+    const aa = a as unknown[]
+    const bb = b as unknown[]
+    if (aa.length !== bb.length) {
+      return false
+    }
+    for (let i = 0; i < aa.length; i++) {
+      if (!keyEquals(aa[i], bb[i])) {
         return false
       }
-      for (let i = 0; i < aa.length; i++) {
-        if (!keyEquals(aa[i], bb[i])) {
-          return false
-        }
-      }
-      return true
     }
-    default:
-      return objectUid(a) === objectUid(b)
+    return true
   }
+
+  if (a instanceof Date) {
+    return b instanceof Date && (a as Date).getTime() === (b as Date).getTime()
+  }
+
+  if (a instanceof RegExp) {
+    return b instanceof RegExp && (a as RegExp) + '' === (b as RegExp) + ''
+  }
+
+  return objectUid(a) === objectUid(b)
 }
 
 function findEntry(slot: Slot | undefined, key: unknown): Entry | undefined {

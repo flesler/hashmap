@@ -62,6 +62,21 @@ describe('hashmap', () => {
     })
   })
 
+  describe('number keys (hashNumber)', () => {
+    it('should treat -0 and 0 as the same key', () => {
+      hashmap.set(-0, 'zero')
+      expect(hashmap.get(0)).toBe('zero')
+      expect(hashmap.size).toBe(1)
+    })
+
+    it('should treat all NaN values as the same key', () => {
+      hashmap.set(Number.NaN, 'a')
+      hashmap.set(Number('not a number'), 'b')
+      expect(hashmap.size).toBe(1)
+      expect(hashmap.get(NaN)).toBe('b')
+    })
+  })
+
   describe('method chaining', () => {
     it('should return the instance on some methods', () => {
       expect(hashmap.set('key', 'value')).toBe(hashmap)
