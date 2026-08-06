@@ -310,7 +310,8 @@ function typeOf(key: unknown): string {
 
 const objectUids = new WeakMap<object, number>()
 
-function objectUid(obj: object): number {
+function objectUid(key: unknown): number {
+  const obj = key as object
   let uid = objectUids.get(obj)
   if (uid === undefined) {
     uid = ++HashMap.uid
@@ -358,10 +359,8 @@ function fastHash(key: unknown): number {
       }
       return h
     }
-    default: {
-      const obj = key as Record<string, unknown>
-      return mixHash(0x7f1a000a, objectUid(obj))
-    }
+    default:
+      return mixHash(0x7f1a000a, objectUid(key))
   }
 }
 
@@ -405,9 +404,8 @@ function keyEquals(a: unknown, b: unknown): boolean {
       }
       return true
     }
-    default: {
-      return objectUid(a as object) === objectUid(b as object)
-    }
+    default:
+      return objectUid(a) === objectUid(b)
   }
 }
 
@@ -449,9 +447,8 @@ function legacyHash(key: unknown): string {
       return '♥' + hashes.join('⁞')
     }
 
-    default: {
-      return '♦' + objectUid(key as object)
-    }
+    default:
+      return '♦' + objectUid(key)
   }
 }
 
