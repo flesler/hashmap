@@ -6,6 +6,7 @@
 - TypeScript source, published from `dist/` (ESM + CJS + IIFE + types)
 - Dropped bower support
 - Minimum Node.js 14
+- Removed `hash()` — internal legacy helper, no known dependents
 
 ### Fixed
 - `clone()` and constructor/`copy()` clone no longer share `Entry` objects with the source (2.4 semantics)
@@ -17,7 +18,7 @@
 ### Deprecated (kept for compatibility)
 - `count()` — use `.size`
 - `remove()` — use `.delete()`
-- `hash()` and `type()` — legacy helpers, not used internally
+- `type()` — legacy helper, not used internally
 
 ### Performance
 - Numeric internal hashing with flat entry storage

@@ -174,11 +174,6 @@ class HashMap {
     return typeOf(key)
   }
 
-  /** @deprecated Legacy string hash; not used by the map implementation. */
-  hash(key: unknown): string {
-    return legacyHash(key)
-  }
-
   keys(): unknown[] {
     const keys: unknown[] = []
     this.forEach((_, key) => {
@@ -402,34 +397,6 @@ function findEntry(slot: Slot | undefined, key: unknown): Entry | undefined {
     return undefined
   }
   return keyEquals(slot.key, key) ? slot : undefined
-}
-
-function legacyHash(key: unknown): string {
-  switch (typeOf(key)) {
-    case 'undefined':
-    case 'null':
-    case 'boolean':
-    case 'number':
-    case 'regexp':
-      return key + ''
-
-    case 'date':
-      return '♣' + (key as Date).getTime()
-
-    case 'string':
-      return '♠' + key
-
-    case 'array': {
-      const hashes: string[] = []
-      for (let i = 0; i < (key as unknown[]).length; i++) {
-        hashes[i] = legacyHash((key as unknown[])[i])
-      }
-      return '♥' + hashes.join('⁞')
-    }
-
-    default:
-      return '♦' + objectUid(key)
-  }
 }
 
 function removeEntry(entries: Entry[], entry: Entry) {

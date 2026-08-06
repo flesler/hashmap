@@ -117,7 +117,7 @@ map.search(42) // 'id'
 | `multi(k1, v1, …)` | Set several pairs at once (chainable) |
 | `size` | Number of entries |
 
-Deprecated aliases kept for compatibility: `remove()` → `delete()`, `count()` → `size`, `hash()`, `type()`.
+Deprecated aliases kept for compatibility: `remove()` → `delete()`, `count()` → `size`, `type()`.
 
 ### TypeScript
 

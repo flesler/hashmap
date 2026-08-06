@@ -62,58 +62,6 @@ describe('hashmap', () => {
     })
   })
 
-  describe('hashmap.hash()', () => {
-    function check(data: unknown, hash: string) {
-      expect(hashmap.hash(data)).toBe(hash)
-    }
-
-    it('should hash primitives accurately', () => {
-      check(null, 'null')
-      check(undefined, 'undefined')
-      check(true, 'true')
-      check(false, 'false')
-      check(NaN, 'NaN')
-      check(1, '1')
-      check(1.1, '1.1')
-      check('1.1', '♠1.1')
-      check('Test', '♠Test')
-    })
-
-    it('should hash objects with primitive representation accurately', () => {
-      check(/test/, '/test/')
-      check(new Date(Date.parse('Fri, 15 Aug 1986 15:05:00 GMT')), '♣524502300000')
-    })
-
-    it('should hash arrays accurately', () => {
-      check([], '♥')
-      check([1, 2, 3], '♥1⁞2⁞3')
-    })
-
-    it('should hash unrecognized objects accurately', () => {
-      check({}, '♦1')
-      check(HashMap, '♦2')
-      check(hashmap, '♦3')
-    })
-
-    it('should not add any property to objects', () => {
-      const obj = {}
-      hashmap.hash(obj)
-      expect(obj).toEqual({})
-      expect(Object.getOwnPropertyNames(obj)).toEqual([])
-    })
-
-    it('should hash the same object to the same value across instances', () => {
-      const obj = {}
-      const other = new HashMap()
-      hashmap.hash(obj)
-      expect(other.hash(obj)).toBe(hashmap.hash(obj))
-    })
-
-    it('should distinguish number and string keys', () => {
-      expect(hashmap.hash(1)).not.toBe(hashmap.hash('1'))
-    })
-  })
-
   describe('method chaining', () => {
     it('should return the instance on some methods', () => {
       expect(hashmap.set('key', 'value')).toBe(hashmap)
@@ -625,6 +573,13 @@ describe('hashmap', () => {
   })
 
   describe('object-key pool', () => {
+    it('should not add any property to objects', () => {
+      const obj = {}
+      hashmap.set(obj, 'value')
+      expect(obj).toEqual({})
+      expect(Object.getOwnPropertyNames(obj)).toEqual([])
+    })
+
     it('should track object keys with deprecated remove and count', () => {
       const pool = new HashMap()
       const res1 = { id: 1 }
