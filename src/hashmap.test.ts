@@ -5,6 +5,7 @@ import { createRequire } from 'node:module'
 import vm from 'node:vm'
 import { describe, it, expect, beforeEach } from 'vitest'
 import HashMap from './hashmap.js'
+import { runTestCases, toModule } from './utils.test.js'
 
 const distDir = join(dirname(fileURLToPath(import.meta.url)), '../dist')
 const distCjs = join(distDir, 'hashmap.cjs')
@@ -15,32 +16,31 @@ const hasDist = existsSync(distCjs) && existsSync(distEsm) && existsSync(distIif
 
 let hashmap: HashMap
 
-describe('hashmap', () => {
+describe(toModule(fileURLToPath(import.meta.url)), () => {
   beforeEach(() => {
     hashmap = new HashMap()
   })
 
   describe('hashmap.type()', () => {
-    function check(data: unknown, type: string) {
-      expect(hashmap.type(data)).toBe(type)
-    }
+    runTestCases((data: unknown) => hashmap.type(data), [
+      { desc: 'null', input: null, expected: 'null' },
+      { desc: 'undefined', input: undefined, expected: 'undefined' },
+      { desc: 'true', input: true, expected: 'boolean' },
+      { desc: 'false', input: false, expected: 'boolean' },
+      { desc: 'NaN', input: NaN, expected: 'number' },
+      { desc: '1', input: 1, expected: 'number' },
+      { desc: '1.1', input: 1.1, expected: 'number' },
+      { desc: '1.1 string', input: '1.1', expected: 'string' },
+      { desc: 'Test string', input: 'Test', expected: 'string' },
+      { desc: 'regexp', input: /test/, expected: 'regexp' },
+      { desc: 'date', input: new Date(), expected: 'date' },
+      { desc: 'array', input: [], expected: 'array' },
+      { desc: 'object', input: {}, expected: 'object' },
+      { desc: 'function', input: HashMap, expected: 'function' },
+    ])
 
-    it('should detect types accurately', () => {
-      check(null, 'null')
-      check(undefined, 'undefined')
-      check(true, 'boolean')
-      check(false, 'boolean')
-      check(NaN, 'number')
-      check(1, 'number')
-      check(1.1, 'number')
-      check('1.1', 'string')
-      check('Test', 'string')
-      check(/test/, 'regexp')
-      check(new Date(), 'date')
-      check([], 'array')
-      check({}, 'object')
-      check(HashMap, 'function')
-      check(hashmap, 'object')
+    it('should detect hashmap instance', () => {
+      expect(hashmap.type(hashmap)).toBe('object')
     })
 
     it('should cast type for browsers that don\'t conform to ECMA 5 spec', () => {
@@ -51,12 +51,12 @@ describe('hashmap', () => {
         return '[object ' + type + ']'
       }
 
-      check(null, 'null')
-      check(undefined, 'undefined')
+      expect(hashmap.type(null)).toBe('null')
+      expect(hashmap.type(undefined)).toBe('undefined')
 
       type = 'Window'
-      check(null, 'null')
-      check(undefined, 'undefined')
+      expect(hashmap.type(null)).toBe('null')
+      expect(hashmap.type(undefined)).toBe('undefined')
 
       Object.prototype.toString = originalToString
     })
