@@ -706,12 +706,34 @@ describe('hashmap', () => {
         expect(map.get('key')).toBe('value')
       })
 
-      it('should construct via namespace import .default (not bare namespace)', async () => {
+      it('should construct via named import from dist', async () => {
+        const mod = await import(distEsmUrl)
+        const HashMapEsm = mod.HashMap
+        expect(typeof HashMapEsm).toBe('function')
+        expect(HashMapEsm).toBe(mod.default)
+        expect(HashMapEsm).toBe(HashMapEsm.HashMap)
+        const map = new HashMapEsm()
+        map.set('key', 'value')
+        expect(map.get('key')).toBe('value')
+      })
+
+      it('should not construct via bare namespace import', async () => {
         const NS = await import(distEsmUrl)
         expect(() => new (NS as unknown as new () => HashMap)()).toThrow()
         const map = new NS.default()
         map.set('key', 'value')
         expect(map.get('key')).toBe('value')
+      })
+    })
+
+    describe('source named export', () => {
+      it('should construct via named import from source', async () => {
+        const mod = await import('./hashmap.js')
+        const Named = mod.HashMap
+        expect(Named).toBe(mod.default)
+        const map = new Named()
+        map.set('a', 1)
+        expect(map.get('a')).toBe(1)
       })
     })
 

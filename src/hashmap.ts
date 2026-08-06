@@ -472,4 +472,5 @@ function removeEntry(entries: Entry[], entry: Entry) {
 HashMap.prototype.remove = HashMap.prototype.delete
 HashMap.HashMap = HashMap
 
+export { HashMap }
 export default HashMap
