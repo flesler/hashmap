@@ -9,18 +9,12 @@ type Slot = Entry | Entry[]
 
 class HashMap {
   static uid = 0
+  // Legacy CJS: require('hashmap').HashMap (assigned below on the default export)
   static HashMap: typeof HashMap
 
   size = 0
   private _entries: Entry[] = []
-  private _index: Map<number, Slot> | null = null
-
-  private indexMap(): Map<number, Slot> {
-    if (this._index === null) {
-      this._index = new Map()
-    }
-    return this._index
-  }
+  private _index = new Map<number, Slot>()
 
   constructor()
   constructor(other: HashMapInit)
@@ -47,18 +41,13 @@ class HashMap {
   }
 
   get(key: unknown): unknown {
-    const index = this._index
-    if (!index) {
-      return undefined
-    }
-    const entry = findEntry(index.get(fastHash(key)), key)
+    const entry = findEntry(this._index.get(fastHash(key)), key)
     return entry && entry.value
   }
 
   set(key: unknown, value: unknown): this {
     const hash = fastHash(key)
-    const index = this.indexMap()
-    const slot = index.get(hash)
+    const slot = this._index.get(hash)
     if (slot) {
       const existing = findEntry(slot, key)
       if (existing) {
@@ -72,10 +61,10 @@ class HashMap {
       if (Array.isArray(slot)) {
         slot.push(entry)
       } else {
-        index.set(hash, [slot, entry])
+        this._index.set(hash, [slot, entry])
       }
     } else {
-      index.set(hash, entry)
+      this._index.set(hash, entry)
     }
     this._entries.push(entry)
     this.size++
@@ -101,11 +90,10 @@ class HashMap {
       return this
     }
 
-    const index = this.indexMap()
     for (let i = 0; i < len; i++) {
       const source = otherEntries[i]
       const hash = fastHash(source.key)
-      const slot = index.get(hash)
+      const slot = this._index.get(hash)
       const existing = slot ? findEntry(slot, source.key) : undefined
       if (existing) {
         existing.value = source.value
@@ -115,10 +103,10 @@ class HashMap {
           if (Array.isArray(slot)) {
             slot.push(entry)
           } else {
-            index.set(hash, [slot, entry])
+            this._index.set(hash, [slot, entry])
           }
         } else {
-          index.set(hash, entry)
+          this._index.set(hash, entry)
         }
         this._entries.push(entry)
         this.size++
@@ -128,11 +116,7 @@ class HashMap {
   }
 
   has(key: unknown): boolean {
-    const index = this._index
-    if (!index) {
-      return false
-    }
-    return !!findEntry(index.get(fastHash(key)), key)
+    return !!findEntry(this._index.get(fastHash(key)), key)
   }
 
   search(value: unknown): unknown {
@@ -146,12 +130,8 @@ class HashMap {
   }
 
   delete(key: unknown): this {
-    const index = this._index
-    if (!index) {
-      return this
-    }
     const hash = fastHash(key)
-    const slot = index.get(hash)
+    const slot = this._index.get(hash)
     if (!slot) {
       return this
     }
@@ -161,7 +141,7 @@ class HashMap {
         if (keyEquals(slot[i].key, key)) {
           const removed = slot[i]
           if (slot.length === 2) {
-            index.set(hash, slot[1 - i])
+            this._index.set(hash, slot[1 - i])
           } else {
             slot.splice(i, 1)
           }
@@ -174,7 +154,7 @@ class HashMap {
     }
 
     if (keyEquals(slot.key, key)) {
-      index.delete(hash)
+      this._index.delete(hash)
       removeEntry(this._entries, slot)
       this.size--
     }
@@ -225,7 +205,7 @@ class HashMap {
 
   clear(): this {
     this._entries = []
-    this._index = null
+    this._index.clear()
     this.size = 0
     return this
   }

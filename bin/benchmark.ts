@@ -76,10 +76,6 @@ function runBenchmarks() {
   let objectValue = makeid(128)
   const results = []
 
-  results.push(measure('create', () => {
-    new HashMap()
-  }))
-
   results.push(measure('singleSet', () => {
     hashmap.set(key, value)
   }, () => {

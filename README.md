@@ -148,7 +148,7 @@ For a script tag without a bundler, use the IIFE build:
 
 ## Benchmarks
 
-3.0 rewrote the internals (numeric hashing, flat entry storage, lazy index). Measured on Node 24, ~250 ms per benchmark, string keys unless noted. Run locally:
+3.0 rewrote the internals (numeric hashing, flat entry storage, eager `Map` index). Measured on Node 24, ~250 ms per benchmark, string keys unless noted. Run locally:
 
 ```bash
 npm run benchmark
@@ -159,19 +159,19 @@ npm run benchmark -- -o tmp/current.json --compare tmp/benchmark-baseline.json
 
 | Operation | 2.4.0 | 3.0.0 | Change |
 |---|---:|---:|---:|
-| `create` | 45.1M | 47.1M | **1.0×** |
-| `set` | 226K | 289K | **1.3×** |
-| `get` | 224K | 292K | **1.3×** |
-| `has` | 237K | 257K | **1.1×** |
-| `delete` | 210K | 273K | **1.3×** |
-| `set` (replace existing key) | 7K | 195K | **26×** |
-| `get` (map with 1024 entries) | 10K | 289K | **28×** |
-| `forEach` (1024 entries) | 29K | 2.3M | **81×** |
-| `keys` (1024 entries) | 26K | 250K | **9.8×** |
+| `set` | 226K | 278K | **1.2×** |
+| `get` | 224K | 268K | **1.2×** |
+| `has` | 237K | 271K | **1.1×** |
+| `delete` | 210K | 261K | **1.2×** |
+| `set` (replace existing key) | 7K | 201K | **27×** |
+| `get` (map with 1024 entries) | 10K | 272K | **26×** |
+| `forEach` (1024 entries) | 29K | 2.3M | **80×** |
+| `keys` (1024 entries) | 26K | 255K | **9.9×** |
 | `clone` (1024 entries) | 11K | 9K | 0.8× |
-| `set` after `delete` (1024 entries) | 238K | 98K | 0.4× |
+| `copy` (1024 entries) | 12K | 9K | 0.8× |
+| `set` after `delete` (1024 entries) | 238K | 73K | 0.3× |
 
-**Summary:** 16 of 21 benchmarks faster than 2.4.0. Biggest wins: replacing/updating keys and iteration. Remaining gaps vs 2.4.0: burst inserts into an empty map, clone/copy, and delete-then-set on large maps.
+**Summary:** 16 of 20 benchmarks faster than 2.4.0. Biggest wins: replacing/updating keys and iteration. Remaining gaps: burst inserts into an empty map, clone/copy, and delete-then-set on large maps.
 
 Values are ops/sec (higher is better). Native `Map` is faster on plain `get` with string keys — `hashmap` trades that for custom equality, `.search()`, and the legacy API.
 
