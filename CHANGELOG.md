@@ -27,6 +27,9 @@
 ### Tooling
 - Vitest, ESLint 9, tsup, GitHub Actions CI
 
+### TypeScript
+- Bundled `.d.ts` — uninstall `@types/hashmap` (see README upgrading section)
+
 ## 2.4.0
 - HashMap instances are now compatible ES6 iterators. Thanks @NathanJang
 

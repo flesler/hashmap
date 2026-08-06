@@ -130,6 +130,23 @@ const cache = new HashMap<string, number>()
 cache.set('answer', 42)
 ```
 
+### Upgrading from 2.x / `@types/hashmap`
+
+Types ship with the package since **3.0.0** — remove DefinitelyTyped:
+
+```bash
+npm uninstall @types/hashmap
+```
+
+`@types/hashmap` used `export = HashMap` (CommonJS assignment import). 3.0 uses a default export:
+
+```ts
+import HashMap from 'hashmap'
+// import HashMap = require('hashmap')  // still works in TS with esModuleInterop
+```
+
+`hash()` was removed (internal helper, no known dependents). Deprecated `remove()`, `count()`, and `type()` remain. See [docs/backwards-compatibility.md](docs/backwards-compatibility.md).
+
 ---
 
 ## Browser
