@@ -1,12 +1,17 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createRequire } from 'node:module'
+import vm from 'node:vm'
 import { describe, it, expect, beforeEach } from 'vitest'
-import { HashMap } from './hashmap.js'
+import HashMap from './hashmap.js'
 
-const distCjs = join(dirname(fileURLToPath(import.meta.url)), '../dist/hashmap.cjs')
-const hasDist = existsSync(distCjs)
+const distDir = join(dirname(fileURLToPath(import.meta.url)), '../dist')
+const distCjs = join(distDir, 'hashmap.cjs')
+const distEsm = join(distDir, 'hashmap.js')
+const distIife = join(distDir, 'hashmap.iife.js')
+const distEsmUrl = pathToFileURL(distEsm).href
+const hasDist = existsSync(distCjs) && existsSync(distEsm) && existsSync(distIife)
 
 let hashmap: HashMap
 
@@ -604,7 +609,7 @@ describe('hashmap', () => {
     })
   })
 
-  describe('forEach with mutation (pool2 / Volumio pattern)', () => {
+  describe('forEach with mutation', () => {
     it('should tolerate remove during forEach', () => {
       hashmap.set('a', 1)
       hashmap.set('b', 2)
@@ -619,8 +624,8 @@ describe('hashmap', () => {
     })
   })
 
-  describe('pool2-style object-key pool', () => {
-    it('should track connection objects like pool2', () => {
+  describe('object-key pool', () => {
+    it('should track object keys with deprecated remove and count', () => {
       const pool = new HashMap()
       const res1 = { id: 1 }
       const res2 = { id: 2 }
@@ -664,18 +669,64 @@ describe('hashmap', () => {
     })
   })
 
-  describe('CJS interop (riak-nodejs-client)', () => {
-    it.skipIf(!hasDist)('should export HashMap on module and .HashMap property', () => {
-      const require = createRequire(import.meta.url)
-      const mod = require(distCjs)
-      const HashMapCjs = mod.default ?? mod
-      expect(HashMapCjs).toBe(mod.HashMap)
-      const map = new HashMapCjs()
-      map.set(5, 'RiakMsg')
-      map.set('RiakMsg', 5)
-      expect(map.get(5)).toBe('RiakMsg')
-      expect(map.get('RiakMsg')).toBe(5)
-      expect(map.size).toBe(2)
+  describe('package import interop', () => {
+    describe.skipIf(!hasDist)('CJS require', () => {
+      it('should construct via require()', () => {
+        const require = createRequire(import.meta.url)
+        const HashMapCjs = require(distCjs)
+        expect(typeof HashMapCjs).toBe('function')
+        expect(HashMapCjs).toBe(HashMapCjs.HashMap)
+        const map = new HashMapCjs()
+        map.set('a', 1)
+        expect(map.get('a')).toBe(1)
+      })
+
+      it('should construct via require().HashMap', () => {
+        const require = createRequire(import.meta.url)
+        const mod = require(distCjs)
+        const HashMapCjs = mod.HashMap
+        expect(HashMapCjs).toBe(mod)
+        const map = new HashMapCjs()
+        map.set(5, 'code')
+        map.set('code', 5)
+        expect(map.get(5)).toBe('code')
+        expect(map.get('code')).toBe(5)
+        expect(map.size).toBe(2)
+      })
+    })
+
+    describe.skipIf(!hasDist)('ESM import', () => {
+      it('should construct via default import from dist', async () => {
+        const mod = await import(distEsmUrl)
+        const HashMapEsm = mod.default
+        expect(typeof HashMapEsm).toBe('function')
+        expect(HashMapEsm).toBe(HashMapEsm.HashMap)
+        const map = new HashMapEsm()
+        map.set('key', 'value')
+        expect(map.get('key')).toBe('value')
+      })
+
+      it('should construct via namespace import .default (not bare namespace)', async () => {
+        const NS = await import(distEsmUrl)
+        expect(() => new (NS as unknown as new () => HashMap)()).toThrow()
+        const map = new NS.default()
+        map.set('key', 'value')
+        expect(map.get('key')).toBe('value')
+      })
+    })
+
+    describe.skipIf(!hasDist)('IIFE script', () => {
+      it('should expose HashMap global', () => {
+        const script = readFileSync(distIife, 'utf8')
+        const sandbox: { HashMap?: typeof HashMap } = {}
+        vm.runInNewContext(script, sandbox)
+        const HashMapGlobal = sandbox.HashMap
+        expect(typeof HashMapGlobal).toBe('function')
+        expect(HashMapGlobal).toBe(HashMapGlobal!.HashMap)
+        const map = new HashMapGlobal!()
+        map.set('x', 1)
+        expect(map.get('x')).toBe(1)
+      })
     })
   })
 })

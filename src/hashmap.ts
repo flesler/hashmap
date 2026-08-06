@@ -7,7 +7,7 @@ type HashMapInit =
 
 type Slot = Entry | Entry[]
 
-export class HashMap {
+class HashMap {
   static uid = 0
   static HashMap: typeof HashMap
 
@@ -470,3 +470,6 @@ function removeEntry(entries: Entry[], entry: Entry) {
 }
 
 HashMap.prototype.remove = HashMap.prototype.delete
+HashMap.HashMap = HashMap
+
+export default HashMap

@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  entry: { hashmap: 'src/index.ts' },
+  entry: { hashmap: 'src/hashmap.ts' },
   format: ['esm', 'cjs', 'iife'],
   globalName: 'HashMap',
   platform: 'neutral',
@@ -11,6 +11,7 @@ export default defineConfig({
   clean: true,
   splitting: false,
   treeshake: true,
+  minify: true,
   outExtension({ format }) {
     if (format === 'cjs') {
       return { js: '.cjs' }
