@@ -163,6 +163,24 @@ export class HashMap {
     return this
   }
 
+  /** @deprecated Use `.delete()` instead. */
+  declare remove: (key: unknown) => this
+
+  /** @deprecated Use `.size` instead. */
+  count(): number {
+    return this.size
+  }
+
+  /** @deprecated Internal helper; not used by the map implementation. */
+  type(key: unknown): string {
+    return typeOf(key)
+  }
+
+  /** @deprecated Legacy string hash; not used by the map implementation. */
+  hash(key: unknown): string {
+    return legacyHash(key)
+  }
+
   keys(): unknown[] {
     const keys: unknown[] = []
     this.forEach((_, key) => {
@@ -373,6 +391,37 @@ function findEntry(slot: Slot | undefined, key: unknown): Entry | undefined {
   return keyEquals(slot.key, key) ? slot : undefined
 }
 
+function legacyHash(key: unknown): string {
+  switch (typeOf(key)) {
+    case 'undefined':
+    case 'null':
+    case 'boolean':
+    case 'number':
+    case 'regexp':
+      return key + ''
+
+    case 'date':
+      return '♣' + (key as Date).getTime()
+
+    case 'string':
+      return '♠' + key
+
+    case 'array': {
+      const hashes: string[] = []
+      for (let i = 0; i < (key as unknown[]).length; i++) {
+        hashes[i] = legacyHash((key as unknown[])[i])
+      }
+      return '♥' + hashes.join('⁞')
+    }
+
+    default: {
+      const obj = key as Record<string, unknown>
+      ensureUid(obj)
+      return '♦' + obj._hmuid_
+    }
+  }
+}
+
 function removeEntry(entries: Entry[], entry: Entry) {
   const i = entry.index
   const last = entries.length - 1
@@ -386,3 +435,5 @@ function removeEntry(entries: Entry[], entry: Entry) {
   }
   entries.pop()
 }
+
+HashMap.prototype.remove = HashMap.prototype.delete

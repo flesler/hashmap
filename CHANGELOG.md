@@ -4,9 +4,13 @@
 
 ### Breaking changes
 - TypeScript source, published from `dist/` (ESM + CJS + IIFE + types)
-- Removed deprecated `count()`, `remove()`, `hash()`, and `type()`
 - Dropped bower support
 - Minimum Node.js 20
+
+### Deprecated (kept for compatibility)
+- `count()` — use `.size`
+- `remove()` — use `.delete()`
+- `hash()` and `type()` — legacy helpers, not used internally
 
 ### Performance
 - Numeric internal hashing with flat entry storage

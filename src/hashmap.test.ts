@@ -8,11 +8,105 @@ describe('hashmap', () => {
     hashmap = new HashMap()
   })
 
+  describe('hashmap.type()', () => {
+    function check(data: unknown, type: string) {
+      expect(hashmap.type(data)).toBe(type)
+    }
+
+    it('should detect types accurately', () => {
+      check(null, 'null')
+      check(undefined, 'undefined')
+      check(true, 'boolean')
+      check(false, 'boolean')
+      check(NaN, 'number')
+      check(1, 'number')
+      check(1.1, 'number')
+      check('1.1', 'string')
+      check('Test', 'string')
+      check(/test/, 'regexp')
+      check(new Date(), 'date')
+      check([], 'array')
+      check({}, 'object')
+      check(HashMap, 'function')
+      check(hashmap, 'object')
+    })
+
+    it('should cast type for browsers that don\'t conform to ECMA 5 spec', () => {
+      const originalToString = Object.prototype.toString
+      let type = 'DOMWindow'
+
+      Object.prototype.toString = function () {
+        return '[object ' + type + ']'
+      }
+
+      check(null, 'null')
+      check(undefined, 'undefined')
+
+      type = 'Window'
+      check(null, 'null')
+      check(undefined, 'undefined')
+
+      Object.prototype.toString = originalToString
+    })
+  })
+
+  describe('hashmap.hash()', () => {
+    function check(data: unknown, hash: string) {
+      expect(hashmap.hash(data)).toBe(hash)
+    }
+
+    it('should hash primitives accurately', () => {
+      check(null, 'null')
+      check(undefined, 'undefined')
+      check(true, 'true')
+      check(false, 'false')
+      check(NaN, 'NaN')
+      check(1, '1')
+      check(1.1, '1.1')
+      check('1.1', '♠1.1')
+      check('Test', '♠Test')
+    })
+
+    it('should hash objects with primitive representation accurately', () => {
+      check(/test/, '/test/')
+      check(new Date(Date.parse('Fri, 15 Aug 1986 15:05:00 GMT')), '♣524502300000')
+    })
+
+    it('should hash arrays accurately', () => {
+      check([], '♥')
+      check([1, 2, 3], '♥1⁞2⁞3')
+    })
+
+    it('should hash unrecognized objects accurately', () => {
+      check({}, '♦1')
+      check(HashMap, '♦2')
+      check(hashmap, '♦3')
+    })
+
+    it('should not add any iterable property to objects', () => {
+      const obj = {}
+      hashmap.hash(obj)
+      expect(obj).toEqual({})
+    })
+
+    it('should hash the same object to the same value across instances', () => {
+      const obj = {}
+      const other = new HashMap()
+      hashmap.hash(obj)
+      expect(other.hash(obj)).toBe(hashmap.hash(obj))
+    })
+
+    it('should distinguish number and string keys', () => {
+      expect(hashmap.hash(1)).not.toBe(hashmap.hash('1'))
+    })
+  })
+
   describe('method chaining', () => {
     it('should return the instance on some methods', () => {
       expect(hashmap.set('key', 'value')).toBe(hashmap)
       expect(hashmap.multi()).toBe(hashmap)
       expect(hashmap.delete('key')).toBe(hashmap)
+      expect(hashmap.remove('key')).toBe(hashmap)
       expect(hashmap.copy(hashmap)).toBe(hashmap)
       expect(hashmap.clear()).toBe(hashmap)
       expect(hashmap.forEach(function () {})).toBe(hashmap)
@@ -59,6 +153,12 @@ describe('hashmap', () => {
     it('should not fail when the key is not found', () => {
       hashmap.delete('key')
       expect(hashmap.has('key')).toBe(false)
+    })
+  })
+
+  describe('hashmap.remove()', () => {
+    it('should be the same function as delete', () => {
+      expect(hashmap.remove).toBe(hashmap.delete)
     })
   })
 
@@ -258,26 +358,30 @@ describe('hashmap', () => {
     })
   })
 
-  describe('hashmap.size', () => {
+  describe('hashmap.size and hashmap.count()', () => {
     it('should return 0 when nothing was added', () => {
       expect(hashmap.size).toBe(0)
+      expect(hashmap.count()).toBe(0)
     })
 
     it('should return 1 once an entry was added', () => {
       hashmap.set('key', 'value')
       expect(hashmap.size).toBe(1)
+      expect(hashmap.count()).toBe(1)
     })
 
     it('should not increase when setting an existing key', () => {
       hashmap.set('key', 'value')
       hashmap.set('key', 'value2')
       expect(hashmap.size).toBe(1)
+      expect(hashmap.count()).toBe(1)
     })
 
     it('should increase when setting different key', () => {
       hashmap.set('key', 'value')
       hashmap.set('key2', 'value2')
       expect(hashmap.size).toBe(2)
+      expect(hashmap.count()).toBe(2)
     })
 
     it('should decrease when deleting a key', () => {
@@ -285,9 +389,11 @@ describe('hashmap', () => {
       hashmap.set('key2', 'value')
       hashmap.delete('key')
       expect(hashmap.size).toBe(1)
+      expect(hashmap.count()).toBe(1)
 
       hashmap.delete('key2')
       expect(hashmap.size).toBe(0)
+      expect(hashmap.count()).toBe(0)
     })
   })
 

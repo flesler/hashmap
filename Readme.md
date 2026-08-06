@@ -40,12 +40,16 @@ Unlike regular objects, __keys will not be stringified__. For example numbers an
 - `has(key:*) : Boolean` returns whether a key is set on the hashmap
 - `search(value:*) : *` returns key under which given value is stored (`null` if not found)
 - `delete(key:*) : HashMap` deletes a key-value pair by key
+- `remove(key:*) : HashMap` alias for `delete()` *(deprecated)*
+- `type(key:*) : String` returns the data type of a key *(deprecated)*
 - `keys() : Array<*>` returns an array with all the registered keys
 - `values() : Array<*>` returns an array with all the values
 - `entries() : Array<[*,*]>` returns an array with [key,value] pairs
 - `size : Number` the amount of key-value pairs
+- `count() : Number` returns the amount of key-value pairs *(deprecated)*
 - `clear() : HashMap` deletes all the key-value pairs on the hashmap
 - `clone() : HashMap` creates a new hashmap with all the key-value pairs of the original
+- `hash(key:*) : String` returns the legacy string hash of a key *(deprecated)*
 - `forEach(function(value, key)) : HashMap` iterates the pairs and calls the function for each one
 
 ### Method chaining
