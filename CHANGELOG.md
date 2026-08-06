@@ -5,7 +5,14 @@
 ### Breaking changes
 - TypeScript source, published from `dist/` (ESM + CJS + IIFE + types)
 - Dropped bower support
-- Minimum Node.js 20
+- Minimum Node.js 14
+
+### Fixed
+- `clone()` and constructor/`copy()` clone no longer share `Entry` objects with the source (2.4 semantics)
+
+### Changed
+- Object-key identity uses a module-level `WeakMap` instead of `_hmuid_` expando on user objects
+- Internal hash index uses native `Map` instead of a plain object
 
 ### Deprecated (kept for compatibility)
 - `count()` — use `.size`

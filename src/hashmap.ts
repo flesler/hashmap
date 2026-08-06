@@ -13,7 +13,14 @@ export class HashMap {
 
   size = 0
   private _entries: Entry[] = []
-  private _index: Record<number, Slot> = {}
+  private _index: Map<number, Slot> | null = null
+
+  private indexMap(): Map<number, Slot> {
+    if (this._index === null) {
+      this._index = new Map()
+    }
+    return this._index
+  }
 
   constructor()
   constructor(other: HashMapInit)
@@ -40,13 +47,18 @@ export class HashMap {
   }
 
   get(key: unknown): unknown {
-    const entry = findEntry(this._index[fastHash(key)], key)
+    const index = this._index
+    if (!index) {
+      return undefined
+    }
+    const entry = findEntry(index.get(fastHash(key)), key)
     return entry && entry.value
   }
 
   set(key: unknown, value: unknown): this {
     const hash = fastHash(key)
-    const slot = this._index[hash]
+    const index = this.indexMap()
+    const slot = index.get(hash)
     if (slot) {
       const existing = findEntry(slot, key)
       if (existing) {
@@ -60,10 +72,10 @@ export class HashMap {
       if (Array.isArray(slot)) {
         slot.push(entry)
       } else {
-        this._index[hash] = [slot, entry]
+        index.set(hash, [slot, entry])
       }
     } else {
-      this._index[hash] = entry
+      index.set(hash, entry)
     }
     this._entries.push(entry)
     this.size++
@@ -83,19 +95,17 @@ export class HashMap {
     }
 
     if (this.size === 0) {
-      this._entries = other._entries.slice()
-      for (let i = 0; i < len; i++) {
-        this._entries[i].index = i
-      }
-      this._index = { ...other._index }
-      this.size = len
+      this._entries = cloneEntries(otherEntries)
+      this._index = rebuildIndex(this._entries)
+      this.size = other.size
       return this
     }
 
+    const index = this.indexMap()
     for (let i = 0; i < len; i++) {
       const source = otherEntries[i]
       const hash = fastHash(source.key)
-      const slot = this._index[hash]
+      const slot = index.get(hash)
       const existing = slot ? findEntry(slot, source.key) : undefined
       if (existing) {
         existing.value = source.value
@@ -105,10 +115,10 @@ export class HashMap {
           if (Array.isArray(slot)) {
             slot.push(entry)
           } else {
-            this._index[hash] = [slot, entry]
+            index.set(hash, [slot, entry])
           }
         } else {
-          this._index[hash] = entry
+          index.set(hash, entry)
         }
         this._entries.push(entry)
         this.size++
@@ -118,7 +128,11 @@ export class HashMap {
   }
 
   has(key: unknown): boolean {
-    return !!findEntry(this._index[fastHash(key)], key)
+    const index = this._index
+    if (!index) {
+      return false
+    }
+    return !!findEntry(index.get(fastHash(key)), key)
   }
 
   search(value: unknown): unknown {
@@ -132,8 +146,12 @@ export class HashMap {
   }
 
   delete(key: unknown): this {
+    const index = this._index
+    if (!index) {
+      return this
+    }
     const hash = fastHash(key)
-    const slot = this._index[hash]
+    const slot = index.get(hash)
     if (!slot) {
       return this
     }
@@ -143,7 +161,7 @@ export class HashMap {
         if (keyEquals(slot[i].key, key)) {
           const removed = slot[i]
           if (slot.length === 2) {
-            this._index[hash] = slot[1 - i]
+            index.set(hash, slot[1 - i])
           } else {
             slot.splice(i, 1)
           }
@@ -156,7 +174,7 @@ export class HashMap {
     }
 
     if (keyEquals(slot.key, key)) {
-      delete this._index[hash]
+      index.delete(hash)
       removeEntry(this._entries, slot)
       this.size--
     }
@@ -207,19 +225,16 @@ export class HashMap {
 
   clear(): this {
     this._entries = []
-    this._index = {}
+    this._index = null
     this.size = 0
     return this
   }
 
   clone(): HashMap {
     const cloned = Object.create(HashMap.prototype) as HashMap
+    cloned._entries = cloneEntries(this._entries)
+    cloned._index = rebuildIndex(cloned._entries)
     cloned.size = this.size
-    cloned._entries = this._entries.slice()
-    cloned._index = { ...this._index }
-    for (let i = 0; i < cloned._entries.length; i++) {
-      cloned._entries[i].index = i
-    }
     return cloned
   }
 
@@ -257,6 +272,33 @@ function multi(map: HashMap, args: unknown[]) {
   }
 }
 
+function cloneEntries(entries: Entry[]): Entry[] {
+  return entries.map((entry, index) => ({
+    key: entry.key,
+    value: entry.value,
+    index,
+  }))
+}
+
+function rebuildIndex(entries: Entry[]): Map<number, Slot> {
+  const index = new Map<number, Slot>()
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i]
+    const hash = fastHash(entry.key)
+    const slot = index.get(hash)
+    if (slot) {
+      if (Array.isArray(slot)) {
+        slot.push(entry)
+      } else {
+        index.set(hash, [slot, entry])
+      }
+    } else {
+      index.set(hash, entry)
+    }
+  }
+  return index
+}
+
 function typeOf(key: unknown): string {
   const str = Object.prototype.toString.call(key)
   let typeName = str.slice(8, -1).toLowerCase()
@@ -266,17 +308,15 @@ function typeOf(key: unknown): string {
   return typeName
 }
 
-function ensureUid(obj: Record<string, unknown>) {
-  if (!Object.prototype.hasOwnProperty.call(obj, '_hmuid_')) {
-    obj._hmuid_ = ++HashMap.uid
-    hide(obj, '_hmuid_')
-  }
-}
+const objectUids = new WeakMap<object, number>()
 
-function hide(obj: object, prop: string) {
-  if (Object.defineProperty) {
-    Object.defineProperty(obj, prop, { enumerable: false })
+function objectUid(obj: object): number {
+  let uid = objectUids.get(obj)
+  if (uid === undefined) {
+    uid = ++HashMap.uid
+    objectUids.set(obj, uid)
   }
+  return uid
 }
 
 function hashString(s: string): number {
@@ -320,8 +360,7 @@ function fastHash(key: unknown): number {
     }
     default: {
       const obj = key as Record<string, unknown>
-      ensureUid(obj)
-      return mixHash(0x7f1a000a, obj._hmuid_ as number)
+      return mixHash(0x7f1a000a, objectUid(obj))
     }
   }
 }
@@ -367,11 +406,7 @@ function keyEquals(a: unknown, b: unknown): boolean {
       return true
     }
     default: {
-      const oa = a as Record<string, unknown>
-      const ob = b as Record<string, unknown>
-      ensureUid(oa)
-      ensureUid(ob)
-      return oa._hmuid_ === ob._hmuid_
+      return objectUid(a as object) === objectUid(b as object)
     }
   }
 }
@@ -415,9 +450,7 @@ function legacyHash(key: unknown): string {
     }
 
     default: {
-      const obj = key as Record<string, unknown>
-      ensureUid(obj)
-      return '♦' + obj._hmuid_
+      return '♦' + objectUid(key as object)
     }
   }
 }

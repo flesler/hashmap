@@ -1,5 +1,12 @@
+import { existsSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { createRequire } from 'node:module'
 import { describe, it, expect, beforeEach } from 'vitest'
 import { HashMap } from './hashmap.js'
+
+const distCjs = join(dirname(fileURLToPath(import.meta.url)), '../dist/hashmap.cjs')
+const hasDist = existsSync(distCjs)
 
 let hashmap: HashMap
 
@@ -83,10 +90,11 @@ describe('hashmap', () => {
       check(hashmap, '♦3')
     })
 
-    it('should not add any iterable property to objects', () => {
+    it('should not add any property to objects', () => {
       const obj = {}
       hashmap.hash(obj)
       expect(obj).toEqual({})
+      expect(Object.getOwnPropertyNames(obj)).toEqual([])
     })
 
     it('should hash the same object to the same value across instances', () => {
@@ -435,6 +443,27 @@ describe('hashmap', () => {
       expect(map.get('key')).toBe('value')
       expect(map.get('key2')).toBe('value2')
     })
+
+    it('should merge without losing existing entries', () => {
+      const a = new HashMap()
+      a.set('x', 1)
+      const b = new HashMap()
+      b.set('y', 2)
+      a.copy(b)
+      expect(a.size).toBe(2)
+      expect(a.get('x')).toBe(1)
+      expect(a.get('y')).toBe(2)
+    })
+
+    it('should overwrite overlapping keys from source', () => {
+      const a = new HashMap()
+      a.set('k', 'old')
+      const b = new HashMap()
+      b.set('k', 'new')
+      a.copy(b)
+      expect(a.get('k')).toBe('new')
+      expect(a.size).toBe(1)
+    })
   })
 
   describe('hashmap.clone()', () => {
@@ -459,6 +488,40 @@ describe('hashmap', () => {
       expect(hashmap.size).toBe(2)
       expect(hashmap.get('key')).toBe('value')
       expect(hashmap.get('key2')).toBe('value2')
+    })
+
+    it('should not mutate original when clone updates existing string key', () => {
+      hashmap.set('x', 1)
+      const clone = hashmap.clone()
+      clone.set('x', 2)
+      expect(hashmap.get('x')).toBe(1)
+      expect(clone.get('x')).toBe(2)
+    })
+
+    it('should not mutate original when clone updates existing object key', () => {
+      const key = {}
+      hashmap.set(key, 'a')
+      const clone = hashmap.clone()
+      clone.set(key, 'b')
+      expect(hashmap.get(key)).toBe('a')
+      expect(clone.get(key)).toBe('b')
+    })
+
+    it('should allow new keys on clone without affecting original', () => {
+      hashmap.set('x', 1)
+      const clone = hashmap.clone()
+      clone.set('y', 2)
+      expect(hashmap.has('y')).toBe(false)
+      expect(hashmap.size).toBe(1)
+      expect(clone.size).toBe(2)
+    })
+
+    it('should isolate delete on clone', () => {
+      hashmap.set('k', 1)
+      const clone = hashmap.clone()
+      clone.delete('k')
+      expect(hashmap.has('k')).toBe(true)
+      expect(clone.has('k')).toBe(false)
     })
   })
 
@@ -528,6 +591,91 @@ describe('hashmap', () => {
       expect(map.size).toBe(2)
       expect(map.get('key')).toBe('value')
       expect(map.get('key2')).toBe('value2')
+    })
+  })
+
+  describe('constructor clone isolation (2.4 compat)', () => {
+    it('should not mutate source when copy updates existing key', () => {
+      hashmap.set('x', 1)
+      const copy = new HashMap(hashmap)
+      copy.set('x', 2)
+      expect(hashmap.get('x')).toBe(1)
+      expect(copy.get('x')).toBe(2)
+    })
+  })
+
+  describe('forEach with mutation (pool2 / Volumio pattern)', () => {
+    it('should tolerate remove during forEach', () => {
+      hashmap.set('a', 1)
+      hashmap.set('b', 2)
+      hashmap.set('c', 3)
+      hashmap.forEach((_value, key) => {
+        if (key === 'b') {
+          hashmap.remove(key)
+        }
+      })
+      expect(hashmap.keys()).toEqual(['a', 'c'])
+      expect(hashmap.size).toBe(2)
+    })
+  })
+
+  describe('pool2-style object-key pool', () => {
+    it('should track connection objects like pool2', () => {
+      const pool = new HashMap()
+      const res1 = { id: 1 }
+      const res2 = { id: 2 }
+      pool.set(res1, new Date())
+      pool.set(res2, new Date())
+      expect(pool.count()).toBe(2)
+      pool.remove(res1)
+      expect(pool.count()).toBe(1)
+      expect(pool.has(res1)).toBe(false)
+      expect(pool.has(res2)).toBe(true)
+      pool.clear()
+      expect(pool.size).toBe(0)
+    })
+  })
+
+  describe('stored undefined value', () => {
+    it('should distinguish missing key from undefined value', () => {
+      hashmap.set('key', undefined)
+      expect(hashmap.has('key')).toBe(true)
+      expect(hashmap.get('key')).toBeUndefined()
+      expect(hashmap.get('missing')).toBeUndefined()
+    })
+  })
+
+  describe('equal RegExp keys (3.0 collision handling)', () => {
+    it('should treat equal regex patterns as one key', () => {
+      const r1 = /test/
+      const r2 = /test/
+      hashmap.set(r1, 'a')
+      hashmap.set(r2, 'b')
+      expect(hashmap.size).toBe(1)
+      expect(hashmap.get(r1)).toBe('b')
+      expect(hashmap.get(r2)).toBe('b')
+    })
+  })
+
+  describe('constructor array-like rejection (2.4 behavior change)', () => {
+    it('should throw when given array-like non-Array', () => {
+      const arrayLike = { length: 2, 0: ['k', 'v'], 1: ['k2', 'v2'] }
+      expect(() => new HashMap(arrayLike as unknown as unknown[][])).toThrow()
+    })
+  })
+
+  describe('CJS interop (riak-nodejs-client)', () => {
+    it.skipIf(!hasDist)('should export HashMap on module and .HashMap property', () => {
+      const require = createRequire(import.meta.url)
+      const mod = require(distCjs)
+      const HashMapCjs = mod.default ?? mod
+      expect(HashMapCjs).toBe(mod.HashMap)
+      const map = new HashMapCjs()
+      map.set(5, 'RiakMsg')
+      map.set('RiakMsg', 5)
+      expect(map.get(5)).toBe('RiakMsg')
+      expect(map.get('RiakMsg')).toBe(5)
+      expect(map.size).toBe(2)
     })
   })
 })
