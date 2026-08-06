@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# Check for DONTCOMMIT in staged files (excluding this hook file)
+if git diff --cached --no-ext-diff -U0 -- ':!.husky/pre-commit' | grep -i 'DONTCOMMIT'; then
+  echo "Error: Found 'DONTCOMMIT' in staged changes. Please remove it before committing."
+  exit 1
+fi
+
+# Check for 3+ consecutive single-line comments (likely commented-out code) in .ts/.tsx files only
+consecutive_comments=$(git diff --cached --no-ext-diff --diff-filter=ACM -U0 -- '*.ts' '*.tsx' | awk '
+  /^@@/ { count=0 }
+  /^\+[[:space:]]*\/\// { count++ }
+  /^\+/ && !/^\+[[:space:]]*\/\// { count=0 }
+  count >= 3 { found=1; exit }
+  END { print found+0 }
+')
+
+if [ "$consecutive_comments" = "1" ]; then
+  echo "Error: Found 3+ consecutive comment lines in staged changes."
+  echo "This usually indicates commented-out code. Either:"
+  echo "  - Remove/uncomment the code if it's temporary"
+  echo "  - Use /* */ block comments if it's legit documentation that should be committed"
+  exit 1
+fi
+
+if ! command -v npm >/dev/null 2>&1 && [ -s "$HOME/.nvm/nvm.sh" ]; then
+  . "$HOME/.nvm/nvm.sh"
+  nvm use
+fi
+
+# lint:fix may rewrite working-tree files; re-stage only paths that were fully staged
+# (index matched working tree before lint) so partial hunks stay partial.
+fully_staged=""
+for file in $(git diff --cached --name-only); do
+  if git diff --quiet -- "$file"; then
+    fully_staged="$fully_staged $file"
+  fi
+done
+
+if ! npm run lint:full; then
+  echo "Lint failed; aborting commit."
+  exit 1
+fi
+
+for file in $fully_staged; do
+  if [ -e "$file" ] || [ -L "$file" ]; then
+    git add -- "$file"
+  fi
+done
