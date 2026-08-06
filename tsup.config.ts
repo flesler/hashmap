@@ -1,3 +1,5 @@
+import { readFileSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
@@ -12,10 +14,7 @@ export default defineConfig({
   splitting: false,
   treeshake: true,
   minify: true,
-  async onSuccess() {
-    const { readFileSync, writeFileSync } = await import('node:fs')
-    const { join } = await import('node:path')
-
+  onSuccess() {
     const cjsFile = join('dist', 'hashmap.cjs')
     const cjsPatch = ';{const h=module.exports.default||module.exports.HashMap;if(typeof h==="function"){h.HashMap=h;module.exports=h;}}'
     const cjs = readFileSync(cjsFile, 'utf8')
