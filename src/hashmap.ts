@@ -1,13 +1,12 @@
 type Entry = { key: unknown, value: unknown, index: number, hash: number }
 
-type HashMapInit =
-  | HashMap
-  | unknown[][]
-  | unknown
+type HashMapInit<TKey, TValue> =
+  | HashMap<TKey, TValue>
+  | [TKey, TValue][]
 
 type Slot = Entry | Entry[]
 
-class HashMap {
+class HashMap<TKey = unknown, TValue = unknown> {
   static uid = 0
   // Legacy CJS: require('hashmap').HashMap (assigned below on the default export)
   static HashMap: typeof HashMap
@@ -17,8 +16,8 @@ class HashMap {
   private _index = new Map<number, Slot>()
 
   constructor()
-  constructor(other: HashMapInit)
-  constructor(...pairs: unknown[])
+  constructor(other: HashMapInit<TKey, TValue>)
+  constructor(...pairs: (TKey | TValue)[])
   constructor(other?: unknown, ...pairs: unknown[]) {
     this.clear()
     const args = other === undefined ? pairs : [other, ...pairs]
@@ -30,7 +29,7 @@ class HashMap {
         if (first && Array.isArray(first)) {
           multi(this, (first as unknown[][]).flat())
         } else {
-          this.copy(first as HashMap)
+          this.copy(first as HashMap<TKey, TValue>)
         }
         break
       }
@@ -40,12 +39,12 @@ class HashMap {
     }
   }
 
-  get(key: unknown): unknown {
+  get(key: TKey): TValue | undefined {
     const entry = findEntry(this._index.get(fastHash(key)), key)
-    return entry && entry.value
+    return entry ? entry.value as TValue : undefined
   }
 
-  set(key: unknown, value: unknown): this {
+  set(key: TKey, value: TValue): this {
     const hash = fastHash(key)
     const slot = this._index.get(hash)
     if (slot) {
@@ -76,7 +75,7 @@ class HashMap {
     return this
   }
 
-  copy(other: HashMap): this {
+  copy(other: HashMap<TKey, TValue>): this {
     const otherEntries = other._entries
     const len = otherEntries.length
     if (len === 0) {
@@ -115,21 +114,21 @@ class HashMap {
     return this
   }
 
-  has(key: unknown): boolean {
+  has(key: TKey): boolean {
     return !!findEntry(this._index.get(fastHash(key)), key)
   }
 
-  search(value: unknown): unknown {
+  search(value: TValue): TKey | null {
     const entries = this._entries
     for (let i = 0; i < entries.length; i++) {
       if (entries[i].value === value) {
-        return entries[i].key
+        return entries[i].key as TKey
       }
     }
     return null
   }
 
-  delete(key: unknown): this {
+  delete(key: TKey): this {
     const hash = fastHash(key)
     const slot = this._index.get(hash)
     if (!slot) {
@@ -162,7 +161,7 @@ class HashMap {
   }
 
   /** @deprecated Use `.delete()` instead. */
-  declare remove: (key: unknown) => this
+  declare remove: (key: TKey) => this
 
   /** @deprecated Use `.size` instead. */
   count(): number {
@@ -174,32 +173,32 @@ class HashMap {
     return typeOf(key)
   }
 
-  keys(): unknown[] {
+  keys(): TKey[] {
     const entries = this._entries
     const out = new Array(entries.length)
     for (let i = 0; i < entries.length; i++) {
       out[i] = entries[i].key
     }
-    return out
+    return out as TKey[]
   }
 
-  values(): unknown[] {
+  values(): TValue[] {
     const entries = this._entries
     const out = new Array(entries.length)
     for (let i = 0; i < entries.length; i++) {
       out[i] = entries[i].value
     }
-    return out
+    return out as TValue[]
   }
 
-  entries(): unknown[][] {
+  entries(): [TKey, TValue][] {
     const entries = this._entries
     const out = new Array(entries.length)
     for (let i = 0; i < entries.length; i++) {
       const entry = entries[i]
-      out[i] = [entry.key, entry.value]
+      out[i] = [entry.key, entry.value] as [TKey, TValue]
     }
-    return out
+    return out as [TKey, TValue][]
   }
 
   clear(): this {
@@ -209,25 +208,25 @@ class HashMap {
     return this
   }
 
-  clone(): HashMap {
-    const cloned = Object.create(HashMap.prototype) as HashMap
+  clone(): HashMap<TKey, TValue> {
+    const cloned = Object.create(HashMap.prototype) as HashMap<TKey, TValue>
     cloned._entries = cloneEntries(this._entries)
     cloned._index = rebuildIndex(cloned._entries)
     cloned.size = this.size
     return cloned
   }
 
-  forEach(func: (value: unknown, key: unknown) => void, ctx?: unknown): this {
+  forEach(func: (value: TValue, key: TKey) => void, ctx?: unknown): this {
     const entries = this._entries
     const context = ctx || this
     for (let i = 0; i < entries.length; i++) {
       const entry = entries[i]
-      func.call(context, entry.value, entry.key)
+      func.call(context, entry.value as TValue, entry.key as TKey)
     }
     return this
   }
 
-  [Symbol.iterator](): Iterator<{ key: unknown, value: unknown }> {
+  [Symbol.iterator](): Iterator<{ key: TKey, value: TValue }> {
     const entries = this._entries
     let i = 0
     return {
@@ -237,7 +236,7 @@ class HashMap {
         }
         const entry = entries[i++]
         return {
-          value: { key: entry.key, value: entry.value },
+          value: { key: entry.key as TKey, value: entry.value as TValue },
           done: false as const,
         }
       },
@@ -245,7 +244,7 @@ class HashMap {
   }
 }
 
-function multi(map: HashMap, args: unknown[]) {
+function multi(map: HashMap<any, any>, args: unknown[]) {
   for (let i = 0; i < args.length; i += 2) {
     map.set(args[i], args[i + 1])
   }

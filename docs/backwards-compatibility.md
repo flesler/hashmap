@@ -31,7 +31,7 @@ Audit date: 2026-08-06. Reference: [hashmap 3.0.0](https://github.com/flesler/ha
 | | `@types/hashmap@2.3.4` | `hashmap@3.0.0` bundled |
 |---|---|---|
 | Module shape | `export = HashMap` | `export default` + `export { HashMap }` |
-| Generics | `HashMap<TKey, TValue>` | `HashMap` with `unknown` keys/values (use inference at call sites) |
+| Generics | `HashMap<TKey, TValue>` | `HashMap<TKey, TValue>` (3.0.1 restores explicit type args; 3.0.0 regressed) |
 | `hash()` | present | removed |
 | `size` | not in DT types | `size: number` |
 | `count()` | primary in DT | deprecated |

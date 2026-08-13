@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.1
+
+### Fixed
+- Restored `HashMap<TKey, TValue>` generic parameters on bundled types (matches `@types/hashmap` migration path)
+
 ## 3.0.0
 
 ### Breaking changes

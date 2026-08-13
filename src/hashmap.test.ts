@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createRequire } from 'node:module'
 import vm from 'node:vm'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, expectTypeOf } from 'vitest'
 import HashMap from './hashmap.js'
 import { runTestCases, toModule } from './utils.test.js'
 
@@ -719,6 +719,17 @@ describe(toModule(fileURLToPath(import.meta.url)), () => {
         map.set('x', 1)
         expect(map.get('x')).toBe(1)
       })
+    })
+  })
+
+  describe('generics', () => {
+    it('accepts key and value type arguments', () => {
+      const map = new HashMap<string, number>()
+      map.set('a', 1)
+      expectTypeOf(map.get('a')).toEqualTypeOf<number | undefined>()
+      expectTypeOf(map.keys()).toEqualTypeOf<string[]>()
+      expectTypeOf(map.values()).toEqualTypeOf<number[]>()
+      expectTypeOf(map.entries()).toEqualTypeOf<[string, number][]>()
     })
   })
 })
