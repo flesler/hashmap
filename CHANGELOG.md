@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.2
+
+### Fixed
+- BigInt keys work with `has`, `set`, and array keys containing bigint (#52)
+- `forEach` and `[Symbol.iterator]` visit every entry when `delete` runs during the callback (#52)
+
 ## 3.0.1
 
 ### Fixed
