@@ -22,26 +22,23 @@ Read `git log -15 --oneline` before writing subjects. On `main` lately:
 - Conventional prefix when it fits: `fix: …`, `docs: …` (not required for every commit).
 - Optional body paragraph after a blank line when the why is not obvious (see `0efa0ca`).
 
-Do **not** copy open-canvas rules (no `feat:` ban, no release subject that is only the version number).
+### Version commit
 
-### Version bump commit
-
-Prefer a **dedicated** commit after product work lands — subject **`Bump to X.Y.Z`** (optional tail: `and pin Node …`, `.nvmrc` tweak), matching `32afe43`, `5536ab2`.
+After product work is on `main`, one **version-only** commit (no library source changes unless `.nvmrc` / release tooling must move with the tag). Commit subject is **exactly the semver**, e.g. `3.0.2` — not `Bump to …`, not `Release …`.
 
 Include in that commit:
 
 - `package.json` `version`
 - `package-lock.json` (root `version` and `packages[""].version`)
 - `CHANGELOG.md` section for `X.Y.Z`
+- Release/agent glue when it changed for this ship (e.g. `.cursor/skills/`, `.agents`)
 
 ```bash
 npm version patch|minor|major --no-git-tag-version
 # or: npm version X.Y.Z --no-git-tag-version --allow-same-version
 ```
 
-Small patches sometimes ship as one commit with the fix and `(X.Y.Z)` in the subject (`0efa0ca`) when user wants a single commit — only when they ask; default is still `Bump to X.Y.Z`.
-
-Do not mix unrelated features/docs into the bump commit.
+Do not mix product features, fixes, or unrelated docs into the version commit.
 
 ## Changelog format (this repo)
 
@@ -124,7 +121,7 @@ npm view hashmap version
 
 1. Product commits on `main` (code, tests, docs — not version/changelog unless bump commit).
 2. `npm run lint:full` green.
-3. Bump commit: `package.json`, `package-lock.json`, `CHANGELOG.md` — subject `Bump to X.Y.Z`.
+3. Version commit: `package.json`, `package-lock.json`, `CHANGELOG.md` (+ release skill if needed) — subject `X.Y.Z`.
 4. `git tag -a X.Y.Z -m X.Y.Z` → `git push origin main X.Y.Z`.
 5. `gh release create X.Y.Z` with notes from that version’s CHANGELOG section.
 6. Tell the user to `npm publish` when git is on the tag they expect.

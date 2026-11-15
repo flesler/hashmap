@@ -100,7 +100,7 @@ describe(toModule(fileURLToPath(import.meta.url)), () => {
     })
 
     it('should work with non-string keys', () => {
-      const keys = [1, null, undefined, false, NaN, /re/, [], {}]
+      const keys = [1, 1n, null, undefined, false, NaN, /re/, [], {}]
       keys.forEach((key) => {
         hashmap.set(key, 'value')
         expect(hashmap.has(key)).toBe(true)
@@ -584,6 +584,43 @@ describe(toModule(fileURLToPath(import.meta.url)), () => {
       })
       expect(hashmap.keys()).toEqual(['a', 'c'])
       expect(hashmap.size).toBe(2)
+    })
+
+    it('should visit every entry when delete runs in forEach', () => {
+      for (let i = 0; i < 6; i++) {
+        hashmap.set(i, i)
+      }
+      const seen: number[] = []
+      hashmap.forEach((_value, key) => {
+        seen.push(key as number)
+        hashmap.delete(key)
+      })
+      expect(seen).toEqual([0, 1, 2, 3, 4, 5])
+      expect(hashmap.size).toBe(0)
+      expect(hashmap.keys()).toEqual([])
+    })
+
+    it('should visit every entry when delete runs during iteration', () => {
+      for (let i = 0; i < 6; i++) {
+        hashmap.set(i, i)
+      }
+      const seen: number[] = []
+      for (const pair of hashmap) {
+        seen.push(pair.key as number)
+        hashmap.delete(pair.key)
+      }
+      expect(seen).toEqual([0, 1, 2, 3, 4, 5])
+      expect(hashmap.size).toBe(0)
+    })
+  })
+
+  describe('bigint keys', () => {
+    it('should support bigint keys and nested bigint in arrays', () => {
+      expect(() => hashmap.has(1n)).not.toThrow()
+      hashmap.set(1n, 'one')
+      expect(hashmap.get(1n)).toBe('one')
+      hashmap.set([1n], 'arr')
+      expect(hashmap.get([1n])).toBe('arr')
     })
   })
 

@@ -217,7 +217,7 @@ class HashMap<TKey = unknown, TValue = unknown> {
   }
 
   forEach(func: (value: TValue, key: TKey) => void, ctx?: unknown): this {
-    const entries = this._entries
+    const entries = this._entries.slice()
     const context = ctx || this
     for (let i = 0; i < entries.length; i++) {
       const entry = entries[i]
@@ -227,7 +227,7 @@ class HashMap<TKey = unknown, TValue = unknown> {
   }
 
   [Symbol.iterator](): Iterator<{ key: TKey, value: TValue }> {
-    const entries = this._entries
+    const entries = this._entries.slice()
     let i = 0
     return {
       next: () => {
@@ -343,6 +343,22 @@ function hashNumber(n: number): number {
   return mixHash(mixHash(0x7f1a0005, numInts[0]), numInts[1])
 }
 
+function hashBigInt(n: bigint): number {
+  let h = 0x7f1a000b
+  let v = n < 0n ? -n : n
+  if (v === 0n) {
+    return mixHash(h, 0)
+  }
+  while (v > 0n) {
+    h = mixHash(h, Number(v & 0xffffffffn))
+    v >>= 32n
+  }
+  if (n < 0n) {
+    h = mixHash(h, 0x80000000)
+  }
+  return h
+}
+
 function fastHash(key: unknown): number {
   const t = typeof key
   if (t === 'string') {
@@ -350,6 +366,9 @@ function fastHash(key: unknown): number {
   }
   if (t === 'number') {
     return hashNumber(key as number)
+  }
+  if (t === 'bigint') {
+    return hashBigInt(key as bigint)
   }
   if (t === 'boolean') {
     return key ? 0x7f1a0003 : 0x7f1a0004
@@ -396,6 +415,9 @@ function keyEquals(a: unknown, b: unknown): boolean {
     return Number.isNaN(a as number) && Number.isNaN(b as number)
   }
   if (ta === 'boolean' && tb === 'boolean') {
+    return false
+  }
+  if (ta === 'bigint' && tb === 'bigint') {
     return false
   }
   if (ta === 'undefined' && tb === 'undefined') {
