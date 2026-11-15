@@ -96,14 +96,20 @@ git push origin main "${VERSION}"
 
 One push for branch + tag.
 
-Create the GitHub release on that tag (tags alone are not enough):
+Create the GitHub release on that tag (tags alone are not enough). **`--title` is already the version** — notes must **not** repeat `## X.Y.Z` (body starts at `### Fixed`, etc.):
 
 ```bash
-# /tmp/hashmap-release-notes/${VERSION}.md = only the ## X.Y.Z section (include ### subheadings)
+VERSION=3.0.2
+mkdir -p "/tmp/hashmap-release-notes"
+awk -v ver="${VERSION}" '
+  $0 == "## " ver { body=1; next }
+  body && /^## / { exit }
+  body { print }
+' CHANGELOG.md > "/tmp/hashmap-release-notes/${VERSION}.md"
 gh release create "${VERSION}" --title "${VERSION}" --notes-file "/tmp/hashmap-release-notes/${VERSION}.md"
 ```
 
-Use `--latest` when backfilling older releases. Strip older sections if the notes file spans multiple versions.
+Use `--latest` when backfilling older releases. To fix an existing release: `gh release edit "${VERSION}" --notes-file "…"`.
 
 ## Publish (user only)
 
@@ -123,7 +129,7 @@ npm view hashmap version
 2. `npm run lint:full` green.
 3. Version commit: `package.json`, `package-lock.json`, `CHANGELOG.md` (+ release skill if needed) — subject `X.Y.Z`.
 4. `git tag -a X.Y.Z -m X.Y.Z` → `git push origin main X.Y.Z`.
-5. `gh release create X.Y.Z` with notes from that version’s CHANGELOG section.
+5. `gh release create X.Y.Z` with notes = that CHANGELOG section **without** the `## X.Y.Z` line.
 6. Tell the user to `npm publish` when git is on the tag they expect.
 
 ## Checklist (user)
